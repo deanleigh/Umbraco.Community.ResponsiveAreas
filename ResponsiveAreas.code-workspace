@@ -1,0 +1,25 @@
+{
+  // Open THIS FILE rather than the folder, so Source Control shows the main
+  // repo and each worktree side by side, each with its own branch.
+  //
+  // The docs worktree (.worktrees/docs) will be added here once the docs
+  // branch exists.
+  "folders": [
+    {
+      "name": "ResponsiveAreas",
+      "path": "."
+    }
+  ],
+  "settings": {
+    // The worktrees are checkouts of this same repository, so without this
+    // every file appears twice in Quick Open and search results.
+    "search.exclude": {
+      "**/.worktrees": true
+    },
+    "files.watcherExclude": {
+      "**/.worktrees/**": true
+    },
+    "git.openRepositoryInParentFolders": "never",
+    "git.detectSubmodulesLimit": 10
+  }
+}

@@ -1,0 +1,48 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem<FeatureInternalLinksChildren>>
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
+
+@{
+    Layout = "_Layout_Features.cshtml";
+    var children = UmbracoContext?.PublishedRequest?.PublishedContent?.Children<WebPage>();
+}
+
+@if (children != null && children.Any())
+{
+    <div class="grid">
+        @foreach (var childPage in children)
+        {
+            var thumbnail = childPage.PageThumbnail;
+            <div class="g-col-12 g-col-md-6 g-col-lg-4">
+                <div class="card h-100 shadow">
+                    @if (thumbnail != null)
+                    {
+                        var mediaUrl = thumbnail.MediaUrl();
+                        if (mediaUrl != null && mediaUrl.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var physicalPath = System.IO.Path.Combine(WebHostEnvironment.WebRootPath, mediaUrl.TrimStart('/').Replace('/', System.IO.Path.DirectorySeparatorChar));
+                            if (System.IO.File.Exists(physicalPath))
+                            {
+                                <div class="card-img-top card-img-svg">
+                                    @Html.Raw(System.IO.File.ReadAllText(physicalPath))
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <img src="@(thumbnail.GetCropUrl(width: 480))" class="card-img-top" alt="...">
+                        }
+                    }
+                    <div class="card-body text-center">
+                        <h3 class="card-title pb-1">
+                            <a class="stretched-link"
+                               href="@childPage.Url()">@childPage.PageTitleShort</a>
+                        </h3>
+                        <p class="card-text pb-2">
+                            @childPage.PageDescription
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
