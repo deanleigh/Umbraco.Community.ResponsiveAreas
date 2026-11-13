@@ -22,11 +22,11 @@
 
   <ItemGroup>
     <!-- Pinned to the test site's Umbraco version. The template ships Version="*",
-         which resolved to Umbraco 18 and would clash with the 17.2.2 test site. -->
-    <PackageReference Include="Umbraco.Cms.Web.Website" Version="17.2.2" />
-    <PackageReference Include="Umbraco.Cms.Web.Common" Version="17.2.2" />
-    <PackageReference Include="Umbraco.Cms.Api.Common" Version="17.2.2" />
-    <PackageReference Include="Umbraco.Cms.Api.Management" Version="17.2.2" />
+         which resolved to Umbraco 18 and would clash with the 17.x test site. -->
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="17.8.0" />
+    <PackageReference Include="Umbraco.Cms.Web.Common" Version="17.8.0" />
+    <PackageReference Include="Umbraco.Cms.Api.Common" Version="17.8.0" />
+    <PackageReference Include="Umbraco.Cms.Api.Management" Version="17.8.0" />
   </ItemGroup>
 
   <ItemGroup>
