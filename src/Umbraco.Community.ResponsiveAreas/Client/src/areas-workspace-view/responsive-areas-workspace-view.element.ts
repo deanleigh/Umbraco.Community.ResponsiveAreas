@@ -5,7 +5,7 @@ import type { UmbPropertyEditorConfig } from "@umbraco-cms/backoffice/property-e
 import { UMB_DATA_TYPE_WORKSPACE_CONTEXT } from "@umbraco-cms/backoffice/data-type";
 import { UMB_PROPERTY_DATASET_CONTEXT, type UmbPropertyDatasetContext } from "@umbraco-cms/backoffice/property";
 import { UmbId } from "@umbraco-cms/backoffice/id";
-import type { ResponsiveLayout } from "./types.js";
+import type { ResponsiveArea, ResponsiveAreaLayoutValues, ResponsiveLayout } from "./types.js";
 
 const LAYOUTS_ALIAS = "responsiveLayouts";
 const MAX_COLUMNS = 24;
@@ -25,6 +25,9 @@ export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implement
 
   @state()
   private _layouts: Array<ResponsiveLayout> = [];
+
+  @state()
+  private _areas: Array<ResponsiveArea> = [];
 
   // Columns of the base layout: the block's own Grid Columns, else the data type's.
   @state()
@@ -52,13 +55,18 @@ export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implement
       );
     }).passContextAliasMatches();
 
-    // The block type's own values (layouts, areaGridColumns) live in the workspace's property dataset.
+    // The block type's own values (layouts, areas, areaGridColumns) live in the workspace's property dataset.
     this.consumeContext(UMB_PROPERTY_DATASET_CONTEXT, async (dataset) => {
       this.#dataset = dataset;
       this.observe(
         await dataset?.propertyValueByAlias<Array<ResponsiveLayout>>(LAYOUTS_ALIAS),
         (layouts) => (this._layouts = layouts ?? []),
         "observeLayouts",
+      );
+      this.observe(
+        await dataset?.propertyValueByAlias<Array<ResponsiveArea>>("areas"),
+        (areas) => (this._areas = areas ?? []),
+        "observeAreas",
       );
       this.observe(
         await dataset?.propertyValueByAlias<number | string | null>("areaGridColumns"),
@@ -76,6 +84,8 @@ export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implement
     this._baseColumns = this.#blockColumns ?? this.#dataTypeColumns;
   }
 
+  // ---------- Layouts ----------
+
   #setLayouts(layouts: Array<ResponsiveLayout>) {
     this.#dataset?.setPropertyValue(LAYOUTS_ALIAS, layouts);
   }
@@ -89,6 +99,14 @@ export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implement
 
   #removeLayout(key: string) {
     this.#setLayouts(this._layouts.filter((x) => x.key !== key));
+    // Tidy up: drop that layout's values from every area.
+    this.#setAreas(
+      this._areas.map((area) => {
+        if (!area.responsiveLayouts?.[key]) return area;
+        const { [key]: _removed, ...rest } = area.responsiveLayouts;
+        return { ...area, responsiveLayouts: rest };
+      }),
+    );
   }
 
   #updateLayout(key: string, changes: Partial<ResponsiveLayout>) {
@@ -111,29 +129,111 @@ export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implement
     this.#updateLayout(layout.key, { columns });
   }
 
-  #renderLayout(layout: ResponsiveLayout) {
-    return html`<div class="layout">
-      <uui-label for="identifier-${layout.key}">Identifier</uui-label>
+  // ---------- Areas within a layout ----------
+
+  #setAreas(areas: Array<ResponsiveArea>) {
+    this.#dataset?.setPropertyValue("areas", areas);
+  }
+
+  // An area's values in a layout. Until set, it inherits the base layout's spans (capped to fit)
+  // and keeps its base position.
+  #valuesFor(area: ResponsiveArea, index: number, layout: ResponsiveLayout): ResponsiveAreaLayoutValues {
+    const stored = area.responsiveLayouts?.[layout.key];
+    return {
+      columnSpan: Math.min(stored?.columnSpan ?? area.columnSpan ?? layout.columns, layout.columns),
+      rowSpan: stored?.rowSpan ?? area.rowSpan ?? 1,
+      order: stored?.order ?? index + 1,
+    };
+  }
+
+  #onAreaValueChange(
+    layout: ResponsiveLayout,
+    area: ResponsiveArea,
+    index: number,
+    field: keyof ResponsiveAreaLayoutValues,
+    event: Event,
+  ) {
+    const raw = parseInt((event.target as HTMLInputElement).value, 10);
+    const max = field === "columnSpan" ? layout.columns : field === "order" ? this._areas.length : MAX_COLUMNS;
+    const value = Math.max(1, Math.min(max, raw || 1));
+    const values = { ...this.#valuesFor(area, index, layout), [field]: value };
+    this.#setAreas(
+      this._areas.map((x) =>
+        x.key === area.key ? { ...x, responsiveLayouts: { ...x.responsiveLayouts, [layout.key]: values } } : x,
+      ),
+    );
+  }
+
+  #renderNumber(
+    layout: ResponsiveLayout,
+    area: ResponsiveArea,
+    index: number,
+    field: keyof ResponsiveAreaLayoutValues,
+    label: string,
+    value: number,
+  ) {
+    const id = `${field}-${layout.key}-${area.key}`;
+    return html`<span class="number">
+      <uui-label for=${id}>${label}</uui-label>
       <uui-input
-        id="identifier-${layout.key}"
-        label="Identifier"
-        .value=${layout.identifier}
-        @change=${(e: Event) => this.#onIdentifierChange(layout, e)}></uui-input>
-      <uui-label for="columns-${layout.key}">Columns</uui-label>
-      <uui-input
-        id="columns-${layout.key}"
+        id=${id}
         type="number"
         min="1"
-        max=${MAX_COLUMNS}
-        label="Columns"
-        .value=${String(layout.columns)}
-        @change=${(e: Event) => this.#onColumnsChange(layout, e)}></uui-input>
-      <uui-button
-        compact
-        label="Remove layout ${layout.identifier}"
-        @click=${() => this.#removeLayout(layout.key)}>
-        <uui-icon name="icon-trash"></uui-icon>
-      </uui-button>
+        label="${label} for ${area.alias ?? "area"} in layout ${layout.identifier}"
+        .value=${String(value)}
+        @change=${(e: Event) => this.#onAreaValueChange(layout, area, index, field, e)}></uui-input>
+    </span>`;
+  }
+
+  #renderLayoutAreas(layout: ResponsiveLayout) {
+    // Each layout is drawn at a width proportional to its column count.
+    const widest = Math.max(this._baseColumns, ...this._layouts.map((x) => x.columns));
+    const width = (layout.columns / widest) * 100;
+    return html`<div class="layout-grid" style="width:${width}%; grid-template-columns: repeat(${layout.columns}, minmax(0, 1fr));">
+      ${repeat(
+        this._areas,
+        (area) => area.key,
+        (area, index) => {
+          const v = this.#valuesFor(area, index, layout);
+          return html`<div class="area" style="grid-column: span ${v.columnSpan}; grid-row: span ${v.rowSpan}; order: ${v.order};">
+            <strong class="alias">${area.alias}</strong>
+            <div class="numbers">
+              ${this.#renderNumber(layout, area, index, "columnSpan", "Columns", v.columnSpan)}
+              ${this.#renderNumber(layout, area, index, "rowSpan", "Rows", v.rowSpan)}
+              ${this.#renderNumber(layout, area, index, "order", "Order", v.order)}
+            </div>
+          </div>`;
+        },
+      )}
+    </div>`;
+  }
+
+  #renderLayout(layout: ResponsiveLayout) {
+    return html`<div class="layout">
+      <div class="layout-header">
+        <uui-label for="identifier-${layout.key}">Identifier</uui-label>
+        <uui-input
+          id="identifier-${layout.key}"
+          label="Identifier"
+          .value=${layout.identifier}
+          @change=${(e: Event) => this.#onIdentifierChange(layout, e)}></uui-input>
+        <uui-label for="columns-${layout.key}">Columns</uui-label>
+        <uui-input
+          id="columns-${layout.key}"
+          type="number"
+          min="1"
+          max=${MAX_COLUMNS}
+          label="Columns"
+          .value=${String(layout.columns)}
+          @change=${(e: Event) => this.#onColumnsChange(layout, e)}></uui-input>
+        <uui-button
+          compact
+          label="Remove layout ${layout.identifier}"
+          @click=${() => this.#removeLayout(layout.key)}>
+          <uui-icon name="icon-trash"></uui-icon>
+        </uui-button>
+      </div>
+      ${this.#renderLayoutAreas(layout)}
     </div>`;
   }
 
@@ -173,13 +273,50 @@ export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implement
         margin: var(--uui-size-layout-1);
       }
       .layout {
+        padding-bottom: var(--uui-size-space-5);
+        margin-bottom: var(--uui-size-space-5);
+        border-bottom: 1px solid var(--uui-color-border);
+      }
+      .layout-header {
         display: flex;
         align-items: center;
         gap: var(--uui-size-space-3);
         margin-bottom: var(--uui-size-space-3);
       }
-      .layout uui-input[type="number"] {
+      .layout-header uui-input[type="number"] {
         width: 6em;
+      }
+      /* Areas mirror core's grey boxes. */
+      .layout-grid {
+        display: grid;
+        gap: 1px;
+      }
+      .area {
+        background: var(--uui-color-surface-alt);
+        border: 1px solid var(--uui-color-border-emphasis);
+        border-radius: var(--uui-border-radius);
+        padding: var(--uui-size-space-3);
+        min-width: 0;
+      }
+      .alias {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-bottom: var(--uui-size-space-2);
+      }
+      .numbers {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--uui-size-space-2);
+      }
+      .number {
+        display: flex;
+        flex-direction: column;
+        font-size: var(--uui-type-small-size);
+      }
+      .number uui-input {
+        width: 4.5em;
       }
       uui-button[look="placeholder"] {
         width: 100%;
