@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Responsive Areas tab – mockup</title>
+<!--
+  UI reference for Umbraco.Community.ResponsiveAreas (Builder Day, 2026-11-13).
+  Replacement for the Block Grid block type "Areas" tab.
+  - Top field = core's areaGridColumns, drives the base layout (empty = inherit 12).
+  - Layouts stacked, each with Identifier (free CSS-ident token) + Columns.
+  - Areas look like core: grey boxes, alias, edit/delete. Drag corner = resize, drag box = reorder.
+  - Add/remove areas on the base layout only. Click an area = core's area modal (not mocked).
+  - Layout width is proportional to its column count.
+-->
+<style>
+:root{
+  --bg:#f3f3f5;--panel:#fff;--box:#f6f6f7;--text:#1b264f;--muted:#68676b;
+  --border:#e9e9eb;--border-strong:#c4c4c4;--handle:#8a8a8a;--accent:#f5c1bc;--ok:#2bc37c;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#1d1d20;--panel:#26262a;--box:#323237;--text:#ececf0;--muted:#a0a0a8;
+    --border:#3a3a40;--border-strong:#55555c;--handle:#8a8a92;--accent:#c46a62;--ok:#2a9d66;color-scheme:dark}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 "Lato",system-ui,sans-serif;padding:24px}
+.mk{max-width:1100px;margin:0 auto;background:var(--bg);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.hd{display:flex;justify-content:space-between;background:var(--panel);border-bottom:1px solid var(--border)}
+.title{padding:18px 20px;font-weight:700;font-size:16px}
+.tabs{display:flex}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:10px 18px;font-size:13px;color:var(--muted);border-left:1px solid var(--border)}
+.tab.on{color:var(--text);box-shadow:inset 0 -3px 0 var(--accent)}
+.tab svg{width:18px;height:18px}
+.box{background:var(--panel);border:1px solid var(--border);border-radius:6px;margin:20px}
+.bh{padding:12px 18px;border-bottom:1px solid var(--border)}
+.prop{display:grid;grid-template-columns:180px minmax(0,1fr);gap:20px;padding:18px}
+.pl{font-weight:700;font-size:14px}
+.ph{font-size:12px;color:var(--muted);margin-top:4px}
+input{font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--border-strong);border-radius:3px;height:32px;padding:0 10px}
+button{font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--border-strong);border-radius:3px;height:32px;padding:0 12px;cursor:pointer}
+.dash{width:100%;border-style:dashed;margin-top:8px}
+.lay{padding:16px 0 20px;border-top:1px solid var(--border)}
+.lay:first-child{border-top:none;padding-top:0}
+.lh{display:flex;align-items:center;gap:12px;margin-bottom:8px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.lh .base{color:var(--text);font-weight:700}
+.lh .rm{margin-left:auto;height:28px;padding:0 8px}
+.gr{display:grid}
+.ar{position:relative;background:var(--box);border:1px solid var(--border-strong);border-radius:3px;padding:8px 10px;min-height:58px;display:flex;justify-content:space-between;gap:6px;cursor:grab;user-select:none}
+.ar .ic{display:flex;gap:8px;color:var(--muted)}
+.ar .ic svg{width:15px;height:15px}
+.ar .h{position:absolute;right:1px;bottom:1px;width:14px;height:14px;cursor:ew-resize}
+.ar .h::after{content:"";position:absolute;right:2px;bottom:2px;width:8px;height:8px;border-right:2px solid var(--handle);border-bottom:2px solid var(--handle)}
+.ar.drop{outline:2px solid var(--accent)}
+.ft{display:flex;justify-content:flex-end;gap:8px;padding:12px 20px;background:var(--panel);border-top:1px solid var(--border)}
+.ft .ok{background:var(--ok);color:#fff;border-color:transparent;font-weight:700}
+</style>
+</head>
+<body>
+<div class="mk">
+  <div class="hd">
+    <div class="title">Configuration of 'Layout - 3 | 6 | 3'</div>
+    <div class="tabs">
+      <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Settings</div>
+      <div class="tab on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Areas</div>
+      <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg>Advanced</div>
+    </div>
+  </div>
+  <div class="box">
+    <div class="bh">Areas</div>
+    <div class="prop">
+      <div class="pl">Grid Columns for Areas</div>
+      <div>
+        <input id="gc" type="number" min="1" max="24" placeholder="12" style="width:100%">
+        <div class="ph">Leave empty to use the Block Grid's columns (12). Sets the base layout.</div>
+      </div>
+    </div>
+    <div class="prop" style="padding-top:0">
+      <div>
+        <div class="pl">Layouts</div>
+        <div class="ph">Areas are added on the base layout. Other layouts resize and reorder them.</div>
+      </div>
+      <div><div id="ls"></div><button id="add" class="dash">+ Add layout</button></div>
+    </div>
+  </div>
+  <div class="ft"><button>Close</button><button class="ok">Submit</button></div>
+</div>
+<script>
+const PENCIL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>';
+const BIN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>';
+const L=[
+  {id:'',c:12,base:true,a:[['tertiary',3],['primary',6],['secondary',3]]},
+  {id:'9',c:9,a:[['tertiary',3],['primary',6],['secondary',9]]},
+  {id:'6',c:6,a:[['primary',6],['tertiary',3],['secondary',3]]},
+  {id:'3',c:3,a:[['primary',3],['secondary',3],['tertiary',3]]}
+];
+let drag=null;
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+function draw(){
+  const max=Math.max(...L.map(l=>l.c));
+  const ls=document.getElementById('ls');
+  ls.innerHTML=L.map((l,i)=>`<div class="lay">
+    <div class="lh">${l.base
+      ?`<span class="base">Base layout</span><span>${l.c} columns${document.getElementById('gc').value?'':', inherited'}</span>`
+      :`<label>Identifier <input data-i="${i}" data-k="id" value="${esc(l.id)}" style="width:110px" pattern="[A-Za-z0-9_-]+"></label>
+        <label>Columns <input data-i="${i}" data-k="c" type="number" min="1" max="24" value="${l.c}" style="width:64px"></label>
+        <button class="rm" data-rm="${i}" aria-label="Remove layout">${BIN}</button>`}</div>
+    <div style="width:${(l.c/max*100).toFixed(2)}%">
+      <div class="gr" style="grid-template-columns:repeat(${l.c},minmax(0,1fr))">
+      ${l.a.map((x,j)=>`<div class="ar" draggable="true" data-i="${i}" data-j="${j}" style="grid-column:span ${Math.min(x[1],l.c)}">
+        <span>${x[0]}</span><span class="ic">${PENCIL}${l.base?BIN:''}</span><span class="h" data-i="${i}" data-j="${j}"></span></div>`).join('')}
+      </div>
+      ${l.base?'<button class="dash">Add area</button>':''}
+    </div></div>`).join('');
+
+  ls.querySelectorAll('.ar').forEach(el=>{
+    el.ondragstart=e=>{if(e.target.classList.contains('h')){e.preventDefault();return}drag=[+el.dataset.i,+el.dataset.j]};
+    el.ondragover=e=>{if(drag&&drag[0]===+el.dataset.i){e.preventDefault();el.classList.add('drop')}};
+    el.ondragleave=()=>el.classList.remove('drop');
+    el.ondrop=e=>{e.preventDefault();if(!drag)return;const a=L[drag[0]].a;const m=a.splice(drag[1],1)[0];a.splice(+el.dataset.j,0,m);drag=null;draw()};
+  });
+  ls.querySelectorAll('.h').forEach(h=>h.onpointerdown=e=>{
+    e.preventDefault();e.stopPropagation();
+    const l=L[+h.dataset.i],x=l.a[+h.dataset.j],gr=h.closest('.gr');
+    const cw=gr.getBoundingClientRect().width/l.c,sx=e.clientX,s0=Math.min(x[1],l.c);
+    const mv=ev=>{const n=Math.max(1,Math.min(l.c,Math.round(s0+(ev.clientX-sx)/cw)));if(n!==x[1]){x[1]=n;h.parentElement.style.gridColumn='span '+n}};
+    const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);draw()};
+    addEventListener('pointermove',mv);addEventListener('pointerup',up);
+  });
+  ls.querySelectorAll('.lh input').forEach(n=>n.onchange=()=>{
+    const l=L[+n.dataset.i];
+    if(n.dataset.k==='id'){
+      l.id=n.value.replace(/[^A-Za-z0-9_-]/g,'');
+      const lead=parseInt(l.id,10);
+      if(lead>=1){l.c=Math.min(24,lead);l.a.forEach(x=>x[1]=Math.min(x[1],l.c))}
+    }else{
+      l.c=Math.max(1,Math.min(24,Math.round(+n.value)||1));l.a.forEach(x=>x[1]=Math.min(x[1],l.c));
+    }
+    draw();
+  });
+  ls.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{L.splice(+b.dataset.rm,1);draw()});
+}
+document.getElementById('gc').oninput=e=>{
+  const v=Math.round(+e.target.value);const c=v>=1?Math.min(24,v):12;
+  L[0].c=c;L[0].a.forEach(x=>x[1]=Math.min(x[1],c));draw();
+};
+document.getElementById('add').onclick=()=>{
+  const p=L[L.length-1],c=Math.max(1,p.c-3);
+  L.push({id:String(c),c,a:p.a.map(x=>[x[0],Math.min(x[1],c)])});
+  draw();
+};
+draw();
+</script>
+</body>
+</html>
