@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ResponsiveAreas.TestSite/ResponsiveAreas.TestSite.csproj" />
+    <Project Path="src/Umbraco.Community.ResponsiveAreas/Umbraco.Community.ResponsiveAreas.csproj" />
+  </Folder>
+</Solution>

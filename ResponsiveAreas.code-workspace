@@ -11,6 +11,7 @@
     }
   ],
   "settings": {
+    "dotnet.defaultSolution": "ResponsiveAreas.slnx",
     // The worktrees are checkouts of this same repository, so without this
     // every file appears twice in Quick Open and search results.
     "search.exclude": {

@@ -48,6 +48,10 @@
     <None Include="App_Plugins\icons\Thumbnails-Icons-RTE.svg" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Umbraco.Community.ResponsiveAreas\Umbraco.Community.ResponsiveAreas.csproj" />
+  </ItemGroup>
+
 	<PropertyGroup>
     <!-- Referenced assemblies (DLLs) will be copied to the publish directory when you build and publish your Umbraco project -->
     <CopyReferencedAssembliesToPublishDirectory>true</CopyReferencedAssembliesToPublishDirectory>
