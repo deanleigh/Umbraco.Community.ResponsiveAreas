@@ -75,6 +75,18 @@ Left as it is for now.
 - **Empty Grid Columns shows as invalid.** Core sets a minimum of 1 on the field. Empty is valid (it means "inherit"), but the field still shows "Value must be greater than or equal to '1'". Our tab should handle this properly.
 - **Keyboard resizing has been started.** Each area box has a keyboard-resize button, labelled "TODO: Some introduction to keyboard scaling". We can build on it.
 
+## Step 2: storage test
+
+Question: if we add our own properties to area objects and the block type, does Umbraco keep them?
+
+Yes.
+They survive a data type save, a resize and an edit in the area settings modal.
+Full details are in [Decision 001: Store layouts inline](/decisions/001-store-layouts-inline/).
+
+Along the way, the replacement tab gained core's two editors back.
+It now looks and works exactly like core's Areas tab.
+Layouts get added on top of that.
+
 ## Next
 
-Storage test: do extra properties on area objects survive a data type save?
+Start the layouts UI: a list of layouts under the base layout, with "Add layout".
