@@ -100,8 +100,21 @@ The Areas tab now has a **Layouts** section below core's editors.
 Layouts save to `responsiveLayouts` on the block type, as in [Decision 003](/decisions/003-layout-data-shape/).
 Tested end to end: added, renamed, removed, saved, and checked the uSync export.
 
-Layouts do not show their areas yet.
+## Step 4: areas in each layout
+
+Each layout now draws the block's areas on its own grid.
+
+- The grid is drawn at a width proportional to the layout's column count.
+- Each area is a grey box with **Columns**, **Rows** and **Order** boxes ([Decision 002](/decisions/002-numbers-alongside-dragging/)).
+- Changing a number resizes or moves the area straight away, using CSS grid.
+- Until changed, an area inherits the base layout.
+- Removing a layout clears its values from every area.
+
+The test site's "Layout - 3 | 6 | 3" block now has a 12 / 9 / 6 / 3 demo, matching the mockup.
+It is committed in the uSync data type, so a uSync import recreates it.
+
+Tested in the browser and checked in the uSync export.
 
 ## Next
 
-Draw the areas inside each layout, with Columns, Rows and Order boxes.
+Dragging: resize an area's corner to fill in Columns and Rows, and drag areas to fill in Order.

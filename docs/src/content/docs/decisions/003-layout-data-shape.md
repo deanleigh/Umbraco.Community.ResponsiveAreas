@@ -43,3 +43,4 @@ The base layout is core's own data: `areaGridColumns`, and each area's `columnSp
 - **Row span is set per layout**, like column span.
 - **Renaming an identifier changes one value.** Areas refer to the key, not the identifier. This is the same reason core gives each area a key as well as an alias.
 - **Core's data is untouched.** Without the package, a block falls back to its base layout.
+- **Values are only stored once changed.** Until then, an area inherits the base layout in that layout: its column span (capped to fit), its row span and its position. A new layout starts as a copy of the base layout, and the stored data stays small.
