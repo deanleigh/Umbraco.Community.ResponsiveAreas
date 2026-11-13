@@ -1,0 +1,14 @@
+{
+  "id": "Umbraco.Community.ResponsiveAreas",
+  "name": "Umbraco.Community.ResponsiveAreas",
+  "version": "0.0.0",
+  "allowTelemetry": true,
+  "extensions": [
+    {
+      "name": "Umbraco Community Responsive Areas Bundle",
+      "alias": "Umbraco.Community.ResponsiveAreas.Bundle",
+      "type": "bundle",
+      "js": "/App_Plugins/UmbracoCommunityResponsiveAreas/umbraco-community-responsive-areas.js"
+    }
+  ]
+}
