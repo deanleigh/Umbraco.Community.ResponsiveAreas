@@ -87,6 +87,21 @@ Along the way, the replacement tab gained core's two editors back.
 It now looks and works exactly like core's Areas tab.
 Layouts get added on top of that.
 
+## Step 3: layouts list
+
+The Areas tab now has a **Layouts** section below core's editors.
+
+- The description names the base layout and its column count.
+- Each layout has an **Identifier**, a **Columns** box and a remove button.
+- **Add layout** starts 3 columns below the previous layout: 9, 6, 3.
+- Identifiers only accept letters, numbers, hyphens and underscores.
+- A leading number fills in Columns. `8-test` gives 8.
+
+Layouts save to `responsiveLayouts` on the block type, as in [Decision 003](/decisions/003-layout-data-shape/).
+Tested end to end: added, renamed, removed, saved, and checked the uSync export.
+
+Layouts do not show their areas yet.
+
 ## Next
 
-Start the layouts UI: a list of layouts under the base layout, with "Add layout".
+Draw the areas inside each layout, with Columns, Rows and Order boxes.
