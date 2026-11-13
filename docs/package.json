@@ -1,0 +1,19 @@
+{
+  "name": "responsive-areas-docs",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build && npm run check:no-local-paths",
+    "preview": "astro preview",
+    "astro": "astro",
+    "check:no-local-paths": "node scripts/check-no-local-paths.mjs"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.41.3",
+    "astro": "^7.1.1",
+    "sharp": "^0.35.3"
+  }
+}
