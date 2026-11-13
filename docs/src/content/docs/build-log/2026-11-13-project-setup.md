@@ -115,6 +115,23 @@ It is committed in the uSync data type, so a uSync import recreates it.
 
 Tested in the browser and checked in the uSync export.
 
+## Step 5: dragging
+
+Areas in each layout can now be dragged.
+
+- **Resize.** Drag the corner handle. The box snaps to whole columns and rows. Columns and Rows are filled in when you let go.
+- **Reorder.** Drag an area's grip onto another area in the same layout. Every area in that layout is renumbered 1, 2, 3, so Order always matches what you see.
+
+Typing, resizing and reordering all write through the same code, so they store the same numbers ([Decision 002](/decisions/002-numbers-alongside-dragging/)).
+
+The grip and corner handle are hidden from screen readers.
+The number boxes are the keyboard and screen reader route.
+
+The grip is a separate handle, not the whole box.
+Making the whole box draggable would fight with typing in its number boxes.
+
+Tested in the browser: a resize from 3 to 6 columns, and a reorder that moved the last area to first.
+
 ## Next
 
-Dragging: resize an area's corner to fill in Columns and Rows, and drag areas to fill in Order.
+Front-end output: CSS variables per layout, and a Bootstrap example partial for the test site.
