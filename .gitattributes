@@ -1,0 +1,4 @@
+# Store text files with LF in the repo, whatever the contributor's OS.
+# Stops regenerated files (ModelsBuilder models, umbraco-package-schema.json)
+# showing as "modified" when only their line endings differ.
+* text=auto
