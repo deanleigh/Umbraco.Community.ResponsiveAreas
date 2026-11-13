@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
+
+    <!-- NuGet package metadata -->
+    <PackageId>Umbraco.Community.ResponsiveAreas</PackageId>
+    <Product>Umbraco.Community.ResponsiveAreas</Product>
+    <Title>ResponsiveAreas</Title>
+    <Authors>Dean Leigh</Authors>
+    <Description>Responsive areas for the Umbraco Block Grid. Replaces the block type Areas tab with multiple area layouts per block, each with its own column count, spans and order. No CSS framework required.</Description>
+    <PackageTags>umbraco;umbraco-marketplace;block-grid;areas;responsive;layout</PackageTags>
+    <Copyright>$([System.DateTime]::UtcNow.ToString('yyyy')) © Dean Leigh</Copyright>
+    <PackageReadmeFile>README_nuget.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/deanleigh/Umbraco.Community.ResponsiveAreas</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/deanleigh/Umbraco.Community.ResponsiveAreas</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Pinned to the test site's Umbraco version. The template ships Version="*",
+         which resolved to Umbraco 18 and would clash with the 17.2.2 test site. -->
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="17.2.2" />
+    <PackageReference Include="Umbraco.Cms.Web.Common" Version="17.2.2" />
+    <PackageReference Include="Umbraco.Cms.Api.Common" Version="17.2.2" />
+    <PackageReference Include="Umbraco.Cms.Api.Management" Version="17.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Dont include the client folder as part of packaging nuget build -->
+    <Content Remove="Client\**" />
+
+    <!-- However make the Umbraco-package.json included for dotnet pack or nuget package and visible to the solution -->
+    <None Include="Client\public\umbraco-package.json" Pack="false" />
+  </ItemGroup>
+
+  <!-- Pack assets into NuGet package root -->
+  <ItemGroup>
+    <None Include="..\..\assets\README_nuget.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+</Project>

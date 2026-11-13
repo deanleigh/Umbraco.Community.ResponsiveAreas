@@ -2,3 +2,42 @@
 # Stops regenerated files (ModelsBuilder models, umbraco-package-schema.json)
 # showing as "modified" when only their line endings differ.
 * text=auto
+
+# GitHub Linguist overrides
+# See: https://github.com/github-linguist/linguist/blob/main/docs/overrides.md
+
+# uSync exported config files (XML) - test site data, not source code
+src/ResponsiveAreas.TestSite/uSync/** linguist-vendored
+
+# Auto-generated Umbraco content type models
+*.generated.cs linguist-generated
+
+# Vite-bundled JavaScript output (compiled from TypeScript)
+src/Umbraco.Community.ResponsiveAreas/wwwroot/App_Plugins/UmbracoCommunityResponsiveAreas/** linguist-generated
+
+###############################################################################
+# Line endings
+#
+# Vite writes LF. Without an explicit rule, Git on Windows converts the working
+# copy to CRLF on checkout, so every rebuild reports files as "modified" that
+# differ only by line ending. Forcing LF on the committed build output means a
+# rebuild produces files that match the stored ones byte-for-byte.
+###############################################################################
+
+# Vite build output (committed, ships in the NuGet package)
+src/Umbraco.Community.ResponsiveAreas/wwwroot/App_Plugins/UmbracoCommunityResponsiveAreas/**/*.js  text eol=lf
+src/Umbraco.Community.ResponsiveAreas/wwwroot/App_Plugins/UmbracoCommunityResponsiveAreas/**/*.map text eol=lf
+
+# Frontend source
+src/Umbraco.Community.ResponsiveAreas/Client/src/**/*.ts text eol=lf
+
+# Repo-level text
+*.md   text eol=lf
+*.json text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+
+# C# — LF for consistency with everything else
+*.cs      text eol=lf
+*.csproj  text eol=lf
+*.slnx    text eol=lf
