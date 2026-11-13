@@ -1,6 +1,9 @@
 # Git worktrees (docs branch lives at .worktrees/docs)
 .worktrees/
 
+# Claude Code personal settings (shared settings.json is committed)
+.claude/settings.local.json
+
 # .NET
 bin/
 obj/

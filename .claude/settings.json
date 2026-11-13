@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(dotnet run*)",
+      "Bash(dotnet watch*)",
+      "Bash(dotnet build*)",
+      "Bash(npm start*)",
+      "Bash(npm run dev*)",
+      "PowerShell(dotnet run*)",
+      "PowerShell(dotnet watch*)",
+      "PowerShell(dotnet build*)",
+      "PowerShell(npm start*)",
+      "PowerShell(npm run dev*)"
+    ]
+  }
+}
