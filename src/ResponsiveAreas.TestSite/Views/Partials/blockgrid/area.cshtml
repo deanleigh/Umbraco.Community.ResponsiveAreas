@@ -2,8 +2,15 @@
 @using Umbraco.Extensions
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridArea>
 
+@using Umbraco.Community.ResponsiveAreas.Rendering
 @{
     var areaBackgroundColors = ViewData["AreaBackgroundColors"] as string; // Retrieve data from ViewData
+
+    // ResponsiveAreas: base span (core's variable names) plus this area's values in each layout.
+    var responsive = ViewData["ResponsiveAreas"] as ResponsiveBlockLayouts;
+    var responsiveStyle = responsive?.HasLayouts == true
+        ? $"--umb-block-grid--area-column-span: {Model.ColumnSpan}; --umb-block-grid--area-row-span: {Model.RowSpan}; {responsive.AreaStyle(Model.Alias)}"
+        : null;
 }
 
 @* DEBUG: Area properties
@@ -16,6 +23,6 @@
 *@
 
 <!-- START - AREA -->
-<div class="area-@Model.ColumnSpan @Model.Alias bg-body @* @areaBackgroundColors *@" data-AreaAlias="@Model.Alias">
+<div class="area-@Model.ColumnSpan @Model.Alias bg-body@(responsiveStyle is null ? "" : " responsive-area") @* @areaBackgroundColors *@" style="@responsiveStyle" data-AreaAlias="@Model.Alias">
     @await Html.GetPreviewBlockGridItemsHtmlAsync(Model)
 </div>

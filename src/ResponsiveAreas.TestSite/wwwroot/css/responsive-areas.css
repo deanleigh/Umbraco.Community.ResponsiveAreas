@@ -1,0 +1,91 @@
+/*
+  ResponsiveAreas: example site CSS for the 12 / 9 / 6 / 3 demo.
+
+  The package only writes numbers as CSS variables. This file decides which layout
+  applies at which width. Identifiers "9", "6" and "3" are this site's choice.
+
+  Bootstrap's CSS grid (.grid) reads --bs-columns, so each layout's column count
+  goes straight into it. Selectors use two classes so they win over the g-col-*
+  classes still sitting in the aliases.
+
+  Each variable falls back to the base layout, so a block without a given layout
+  keeps its base spans.
+*/
+
+/* Base layout, 1200px and wider: 12 columns. */
+.responsive-areas > .responsive-area {
+  grid-column: auto / span var(--umb-block-grid--area-column-span);
+  grid-row: auto / span var(--umb-block-grid--area-row-span, 1);
+  order: 0;
+}
+
+/* "9": 992px to 1199px. */
+@media (992px <= width < 1200px) {
+  .responsive-areas {
+    --bs-columns: var(--umb-block-grid--area-grid-columns--9, 12);
+  }
+  .responsive-areas > .responsive-area {
+    grid-column: auto / span var(--umb-block-grid--area-column-span--9, var(--umb-block-grid--area-column-span));
+    grid-row: auto / span var(--umb-block-grid--area-row-span--9, var(--umb-block-grid--area-row-span, 1));
+    order: var(--umb-block-grid--area-order--9, 0);
+  }
+}
+
+/* "6": 576px to 991px. */
+@media (576px <= width < 992px) {
+  .responsive-areas {
+    --bs-columns: var(--umb-block-grid--area-grid-columns--6, 12);
+  }
+  .responsive-areas > .responsive-area {
+    grid-column: auto / span var(--umb-block-grid--area-column-span--6, var(--umb-block-grid--area-column-span));
+    grid-row: auto / span var(--umb-block-grid--area-row-span--6, var(--umb-block-grid--area-row-span, 1));
+    order: var(--umb-block-grid--area-order--6, 0);
+  }
+}
+
+/* "3": below 576px. */
+@media (width < 576px) {
+  .responsive-areas {
+    --bs-columns: var(--umb-block-grid--area-grid-columns--3, 12);
+  }
+  .responsive-areas > .responsive-area {
+    grid-column: auto / span var(--umb-block-grid--area-column-span--3, var(--umb-block-grid--area-column-span));
+    grid-row: auto / span var(--umb-block-grid--area-row-span--3, var(--umb-block-grid--area-row-span, 1));
+    order: var(--umb-block-grid--area-order--3, 0);
+  }
+}
+
+/*
+  Demo block only ("Layout - Responsive Demo"): colour each area and show which layout
+  is active. Aliases are plain names (a, b, c, d), so colours come from Bootstrap's
+  subtle background variables here, not from classes in the alias.
+*/
+.areas[data-layoutalias="layoutResponsiveDemo"] > [data-areaalias] {
+  padding: 1rem;
+  border-radius: var(--bs-border-radius-xl);
+}
+.areas[data-layoutalias="layoutResponsiveDemo"] > [data-areaalias="a"] { background: var(--bs-primary-bg-subtle) !important; }
+.areas[data-layoutalias="layoutResponsiveDemo"] > [data-areaalias="b"] { background: var(--bs-success-bg-subtle) !important; }
+.areas[data-layoutalias="layoutResponsiveDemo"] > [data-areaalias="c"] { background: var(--bs-warning-bg-subtle) !important; }
+.areas[data-layoutalias="layoutResponsiveDemo"] > [data-areaalias="d"] { background: var(--bs-danger-bg-subtle) !important; }
+
+.areas[data-layoutalias="layoutResponsiveDemo"]::before {
+  content: "Layout: 12 (base)";
+  grid-column: 1 / -1;
+  order: -1;
+  justify-self: start;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--bs-border-radius-pill);
+  background: var(--bs-dark);
+  color: var(--bs-light);
+  font-weight: 700;
+}
+@media (992px <= width < 1200px) {
+  .areas[data-layoutalias="layoutResponsiveDemo"]::before { content: "Layout: 9"; }
+}
+@media (576px <= width < 992px) {
+  .areas[data-layoutalias="layoutResponsiveDemo"]::before { content: "Layout: 6"; }
+}
+@media (width < 576px) {
+  .areas[data-layoutalias="layoutResponsiveDemo"]::before { content: "Layout: 3"; }
+}

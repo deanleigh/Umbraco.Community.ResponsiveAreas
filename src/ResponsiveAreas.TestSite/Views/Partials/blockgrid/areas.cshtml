@@ -1,6 +1,13 @@
 @using Umbraco.Community.BlockPreview.Extensions
 @using Umbraco.Extensions
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@using Umbraco.Community.ResponsiveAreas.Rendering
+@inject IResponsiveAreasService ResponsiveAreas
+@{
+    // ResponsiveAreas: this block's layouts. Passed down to area.cshtml through ViewData.
+    var responsive = await ResponsiveAreas.GetBlockLayoutsAsync(Model);
+    ViewData["ResponsiveAreas"] = responsive;
+}
 
 @* DEBUG: Areas container properties
 <div class="alert alert-secondary">
@@ -13,7 +20,7 @@
 *@
 
 <!-- START - AREAS -->
-<div class="areas grid container-xxl" data-LayoutContentKey="@Model.ContentKey" data-LayoutAlias="@Model.Content.ContentType.Alias" data-GridColumns="@Model.GridColumns">
+<div class="areas grid container-xxl@(responsive.HasLayouts ? " responsive-areas" : "")" style="@responsive.BlockStyle()" data-LayoutContentKey="@Model.ContentKey" data-LayoutAlias="@Model.Content.ContentType.Alias" data-GridColumns="@Model.GridColumns">
     @foreach (var area in Model.Areas)
     {
         @await Html.GetPreviewBlockGridItemAreaHtmlAsync(area)
