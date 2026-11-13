@@ -1,16 +1,28 @@
 {
-  // Open THIS FILE rather than the folder, so Source Control shows the main
-  // repo and each worktree side by side, each with its own branch.
+  // Multi-root workspace: the main repo plus the docs worktree.
   //
-  // The docs worktree (.worktrees/docs) will be added here once the docs
-  // branch exists.
+  // Open THIS FILE rather than the folder, so Source Control shows the main
+  // repo and the docs worktree side by side, each with its own branch.
+  //
+  // The worktree folder is gitignored and is NOT created by cloning.
+  // If it is missing, VS Code shows it greyed out. Create it with:
+  //   git worktree add .worktrees/docs docs/site
+  //
+  // See WORKTREES.md for the full workflow.
   "folders": [
     {
       "name": "ResponsiveAreas",
       "path": "."
+    },
+    {
+      "name": "ResponsiveAreas (docs)",
+      "path": ".worktrees/docs"
     }
   ],
   "settings": {
+    // Pin the solution. The docs worktree is a full checkout of this same
+    // repository, so it holds its own copy of ResponsiveAreas.slnx. Without
+    // this the C# extension can pick the docs branch's copy.
     "dotnet.defaultSolution": "ResponsiveAreas.slnx",
     // The worktrees are checkouts of this same repository, so without this
     // every file appears twice in Quick Open and search results.
@@ -18,7 +30,8 @@
       "**/.worktrees": true
     },
     "files.watcherExclude": {
-      "**/.worktrees/**": true
+      "**/.worktrees/**": true,
+      "**/docs/dist/**": true
     },
     "git.openRepositoryInParentFolders": "never",
     "git.detectSubmodulesLimit": 10

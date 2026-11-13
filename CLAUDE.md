@@ -13,7 +13,7 @@ Once a release workflow exists, the tag **is** the published NuGet version. Push
 ## Session Startup
 
 1. Read the documentation first. It is the source of truth for what ResponsiveAreas is and the decisions behind it. A previous session wrote it; that context is gone.
-   Docs live in the docs worktree at `.worktrees/docs/` (not yet created).
+   Docs live in the docs worktree at `.worktrees/docs/` (see `WORKTREES.md`).
 2. Take version numbers from the `.csproj` files, never from docs or this file.
 3. Note anything missing or wrong in the docs as you read.
 
