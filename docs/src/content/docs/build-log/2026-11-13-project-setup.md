@@ -132,6 +132,45 @@ Making the whole box draggable would fight with typing in its number boxes.
 
 Tested in the browser: a resize from 3 to 6 columns, and a reorder that moved the last area to first.
 
+## Step 6: front-end output
+
+The front end now uses the layouts.
+
+### In the package
+
+- `IResponsiveAreasService` reads the raw Block Grid configuration, because core's typed model drops our properties.
+- It returns each block's layouts and each area's values, already resolved with the same inherit rules as the backoffice.
+- `BlockStyle()` and `AreaStyle(alias)` turn them into CSS variables.
+- The cache clears whenever a data type is saved or deleted.
+
+Full details: [Front-end output](/reference/front-end-output/).
+
+### In the test site
+
+- `areas.cshtml` and `area.cshtml` write the variables.
+- `responsive-areas.css` maps layouts 9, 6 and 3 to widths, setting Bootstrap's `--bs-columns`.
+
+### A better demo
+
+The 3 | 6 | 3 page reflowed, but it looked the same as before.
+Its aliases still held Bootstrap classes, which already moved the areas.
+
+So we built a demo that aliases could not produce:
+
+- A new block, "Layout - Responsive Demo", with areas named `a`, `b`, `c`, `d`.
+- A row span at 12 columns, and different orders at 9, 6 and 3.
+- One rich text feature per area, saying where it sits in each layout.
+- Colours and a "Layout: …" badge, from site CSS only.
+
+See the screenshots on the [Introduction](/introduction/#see-it-working).
+
+### Found along the way
+
+- **Rendered areas have no key.** Areas are matched by alias. Adding the key to core's `BlockGridArea` would make this exact. A good point for a core proposal.
+- **The test site compiles views at build time.** View changes need a restart.
+- **uSync imports settings and content separately.** The demo page needed a content import.
+
 ## Next
 
-Front-end output: CSS variables per layout, and a Bootstrap example partial for the test site.
+- Tidy the demo badge.
+- The Bootstrap class route ([Decision 005](/decisions/005-bootstrap-through-the-site/)): layouts named `md` and `lg`, building `g-col-*` classes.

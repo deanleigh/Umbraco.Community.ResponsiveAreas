@@ -79,6 +79,27 @@ You can [try the interactive mockup](/mockups/responsive-areas-tab-mockup.html).
 
 Aliases go back to being names.
 
+## See it working
+
+The test site has a demo page: one block, four areas, four layouts.
+The aliases are plain `a`, `b`, `c` and `d`. Every move comes from the layouts.
+
+At 12 columns, area a is a tall feature spanning two rows.
+
+![The demo block at 12 columns. Blue area a spans two rows on the left. Green area b sits top right. Yellow area c and red area d sit side by side below b. A badge reads "Layout: 12 (base)".](../../assets/screenshots/introduction/05-demo-12.png)
+
+At 9 columns, area a runs across the top.
+
+![The demo block at 9 columns. Area a runs full width across the top. Areas b, c and d sit in a row of three below it. A badge reads "Layout: 9".](../../assets/screenshots/introduction/05-demo-9.png)
+
+At 6 columns, area d leads the page.
+
+![The demo block at 6 columns. Red area d is first and full width. Area a follows, full width. Areas b and c sit side by side at the bottom. A badge reads "Layout: 6".](../../assets/screenshots/introduction/05-demo-6.png)
+
+At 3 columns, everything stacks in a new order: c, a, d, b.
+
+![The demo block at 3 columns. The areas are stacked one above the other, in the order c, a, d, b. A badge reads "Layout: 3".](../../assets/screenshots/introduction/05-demo-3.png)
+
 ## How the front end uses it
 
 ResponsiveAreas does not decide when a layout applies.
