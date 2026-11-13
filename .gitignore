@@ -21,3 +21,9 @@ docs/.astro/
 # OS
 .DS_Store
 Thumbs.db
+
+# Secrets: Playwright credentials (.env.example is committed)
+**/.env
+
+# Playwright MCP browser output
+.playwright-mcp/
