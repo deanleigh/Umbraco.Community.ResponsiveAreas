@@ -42,7 +42,7 @@ The test: *does the package need this to work?* If not, it stays in the test sit
 
 ## Branching
 
-Work directly on `main` for now. No `develop` or feature branches until Dean says otherwise. Still ask before committing or pushing.
+Work directly on `main` for now. No `develop` or feature branches until Dean says otherwise. Commit and push as we go: each finished, tested step, without asking first. Never tag.
 
 ## GitHub Issues
 
