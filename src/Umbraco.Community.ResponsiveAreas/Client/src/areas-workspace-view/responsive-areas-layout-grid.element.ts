@@ -2,6 +2,7 @@ import { UmbLitElement } from "@umbraco-cms/backoffice/lit-element";
 import { css, html, customElement, property, state, repeat } from "@umbraco-cms/backoffice/external/lit";
 import { UmbSorterController, UmbSorterResolvePlacementAsGrid } from "@umbraco-cms/backoffice/sorter";
 import type { ResponsiveArea, ResponsiveAreaLayoutValues, ResponsiveLayout } from "./types.js";
+import "./responsive-areas-scale-handler.element.js";
 
 const MAX_ROWS = 24;
 
@@ -17,6 +18,13 @@ export class ResponsiveLayoutValuesChangeEvent extends Event {
   }
 }
 
+// Fired when an area's bin is clicked. The owner confirms and deletes it.
+export class ResponsiveLayoutAreaDeleteEvent extends Event {
+  constructor(public key: string) {
+    super("area-delete", { bubbles: false, composed: false });
+  }
+}
+
 // One layout's grid of areas. Moving and resizing copy core's Areas editor
 // (property-editor-ui-block-grid-areas-config): the whole box drags with core's sorter,
 // and core's corner handle resizes it.
@@ -24,6 +32,11 @@ export class ResponsiveLayoutValuesChangeEvent extends Event {
 export class ResponsiveAreasLayoutGridElement extends UmbLitElement {
   @property({ attribute: false })
   layout!: ResponsiveLayout;
+
+  // The route to core's area dialog. When set, each area shows core's pencil and bin.
+  // Without it, the box shows only its alias.
+  @property({ attribute: false })
+  workspacePath?: string;
 
   // Areas in this layout's order.
   @property({ attribute: false })
@@ -46,8 +59,8 @@ export class ResponsiveAreasLayoutGridElement extends UmbLitElement {
   #sorter = new UmbSorterController<ResponsiveLayoutGridItem, HTMLElement>(this, {
     itemSelector: ".area",
     resolvePlacement: UmbSorterResolvePlacementAsGrid,
-    // The number boxes and corner handle must not start a move.
-    ignorerSelector: "input,uui-input,umb-block-scale-handler",
+    // The buttons and corner handle must not start a move.
+    ignorerSelector: "input,uui-input,uui-button,responsive-areas-scale-handler",
     getUniqueOfElement: (element) => element.dataset.key,
     getUniqueOfModel: (item) => item.area.key,
     onChange: ({ model }) => {
@@ -60,22 +73,15 @@ export class ResponsiveAreasLayoutGridElement extends UmbLitElement {
     this.dispatchEvent(new ResponsiveLayoutValuesChangeEvent(changes));
   }
 
-  #onNumberChange(item: ResponsiveLayoutGridItem, field: keyof ResponsiveAreaLayoutValues, event: Event) {
-    const raw = parseInt((event.target as HTMLInputElement).value, 10);
-    const max = field === "columnSpan" ? this.layout.columns : field === "order" ? this._items.length : MAX_ROWS;
-    const value = Math.max(1, Math.min(max, raw || 1));
-    this.#dispatch(new Map([[item.area.key, { [field]: value }]]));
-  }
-
   // Drag core's corner handle. Snaps to whole columns and rows, shows "3x1" live,
   // and writes the new spans when released.
   #startResize(event: PointerEvent, item: ResponsiveLayoutGridItem) {
     event.preventDefault();
     const handle = event.currentTarget as HTMLElement;
     const box = handle.closest(".area") as HTMLElement;
-    const grid = box.parentElement as HTMLElement;
     const start = item.values;
-    const columnWidth = grid.clientWidth / this.layout.columns;
+    // This element is the grid. The boxes sit in its shadow root, so they have no parent element.
+    const columnWidth = this.clientWidth / this.layout.columns;
     const rowHeight = box.offsetHeight / start.rowSpan;
     const startX = event.clientX;
     const startY = event.clientY;
@@ -109,18 +115,20 @@ export class ResponsiveAreasLayoutGridElement extends UmbLitElement {
     handle.addEventListener("pointercancel", end);
   }
 
-  #renderNumber(item: ResponsiveLayoutGridItem, field: keyof ResponsiveAreaLayoutValues, label: string, value: number) {
-    const id = `${field}-${item.area.key}`;
-    return html`<span class="number">
-      <uui-label for=${id}>${label}</uui-label>
-      <uui-input
-        id=${id}
-        type="number"
-        min="1"
-        label="${label} for ${item.area.alias ?? "area"} in layout ${this.layout.identifier}"
-        .value=${String(value)}
-        @change=${(e: Event) => this.#onNumberChange(item, field, e)}></uui-input>
-    </span>`;
+  // Core's pencil and bin. They sit beside the alias rather than over it.
+  #renderActions(item: ResponsiveLayoutGridItem) {
+    const alias = item.area.alias ?? "area";
+    return html`<uui-action-bar>
+      <uui-button compact label="Edit ${alias}" href=${this.workspacePath + "edit/" + item.area.key}>
+        <uui-icon name="icon-edit"></uui-icon>
+      </uui-button>
+      <uui-button
+        compact
+        label="Delete ${alias}"
+        @click=${() => this.dispatchEvent(new ResponsiveLayoutAreaDeleteEvent(item.area.key))}>
+        <uui-icon name="icon-remove"></uui-icon>
+      </uui-button>
+    </uui-action-bar>`;
   }
 
   override render() {
@@ -131,20 +139,16 @@ export class ResponsiveAreasLayoutGridElement extends UmbLitElement {
         const scaling = this._scaling?.key === item.area.key ? this._scaling : undefined;
         const columnSpan = scaling?.columnSpan ?? item.values.columnSpan;
         const rowSpan = scaling?.rowSpan ?? item.values.rowSpan;
-        // The box and corner handle are mouse and touch shortcuts. The number boxes are the
-        // keyboard and screen reader route.
         return html`<div class="area" data-key=${item.area.key} style="grid-column: span ${columnSpan}; grid-row: span ${rowSpan};">
-          <strong class="alias">${item.area.alias}</strong>
-          <div class="numbers">
-            ${this.#renderNumber(item, "columnSpan", "Columns", columnSpan)}
-            ${this.#renderNumber(item, "rowSpan", "Rows", rowSpan)}
-            ${this.#renderNumber(item, "order", "Order", item.values.order)}
+          <div class="head">
+            <strong class="alias">${item.area.alias}</strong>
+            ${this.workspacePath ? this.#renderActions(item) : null}
           </div>
-          <umb-block-scale-handler
+          <responsive-areas-scale-handler
             @mousedown=${(e: MouseEvent) => e.preventDefault()}
             @pointerdown=${(e: PointerEvent) => this.#startResize(e, item)}>
             ${columnSpan}x${rowSpan}
-          </umb-block-scale-handler>
+          </responsive-areas-scale-handler>
         </div>`;
       },
     );
@@ -175,29 +179,25 @@ export class ResponsiveAreasLayoutGridElement extends UmbLitElement {
       .area[drag-placeholder] {
         opacity: 0.2;
       }
-      umb-block-scale-handler {
+      responsive-areas-scale-handler {
         touch-action: none;
+      }
+      .head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: var(--uui-size-space-2);
+        margin-bottom: var(--uui-size-space-2);
+      }
+      uui-action-bar {
+        flex-shrink: 0;
       }
       .alias {
         display: block;
         min-width: 0;
-        margin-bottom: var(--uui-size-space-2);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-      }
-      .numbers {
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--uui-size-space-2);
-      }
-      .number {
-        display: flex;
-        flex-direction: column;
-        font-size: var(--uui-type-small-size);
-      }
-      .number uui-input {
-        width: 4.5em;
       }
     `,
   ];

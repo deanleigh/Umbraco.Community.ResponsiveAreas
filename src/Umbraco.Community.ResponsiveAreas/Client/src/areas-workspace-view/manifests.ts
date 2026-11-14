@@ -22,4 +22,17 @@ export const manifests: Array<UmbExtensionManifest> = [
       },
     ],
   },
+  {
+    // The first layout's areas editor, used only inside the tab above.
+    // Like core's own areas editor, it has no schema.
+    type: "propertyEditorUi",
+    alias: "ResponsiveAreas.PropertyEditorUi.Areas",
+    name: "ResponsiveAreas Areas Property Editor UI",
+    element: () => import("./responsive-areas-areas-editor.element.js"),
+    meta: {
+      label: "ResponsiveAreas Areas",
+      icon: "icon-grid",
+      group: "common",
+    },
+  },
 ];
