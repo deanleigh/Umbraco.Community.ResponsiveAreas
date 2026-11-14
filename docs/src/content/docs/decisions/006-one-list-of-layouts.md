@@ -1,52 +1,73 @@
 ---
-title: "006: One list of layouts, the default first"
-description: The base areas are the first layout. Every layout shares one look, and core's data is unchanged.
+title: "006: One list of layouts, the first one core's"
+description: The Areas tab becomes a Grid box and one list of layouts. The first layout is core's own areas, with no breakpoint. Core's data is unchanged.
 ---
 
 **Date:** 14 Nov 2026
-**Status:** Proposed. Try the [clickable mockup](/mockups/one-list-of-layouts-mockup.html) first.
+**Status:** Accepted. Built the same day.
 
 ## Context
 
-The Areas tab has three parts today:
+The Areas tab had three parts:
 
 1. **Grid Columns for Areas**, core's column count.
 2. **Areas**, core's editor, where areas are added and edited.
 3. **Layouts**, our section, listing the extra layouts.
 
-The base areas are a layout too. But they look different from the layouts below them.
-The Layouts section does not read as a continuation of the Areas above it.
+The base areas are a layout too.
+But they looked different from the layouts below them, and the Layouts section did not read as a continuation of the areas above it.
 
-The package also has to be good enough to use for a year on its own.
-Core may or may not adopt it. Any site using it must be able to keep what it has.
+Anyone using the tab must be able to keep what they have.
 
 ## Decision
 
-Show **one list of layouts**. The default layout comes first.
+### A Grid box at the top
 
-- **Every layout has the same header:** Identifier and Columns.
-- **The default layout's Columns is core's Grid Columns for Areas.** Same setting, better place.
-- **Areas are added only in the default layout.** Every layout has the same areas. Sites that want different areas per layout can custom code it.
-- **The default layout cannot be removed.** Extra layouts have a bin.
-- **Add area** sits inside the default layout. **Add layout** sits below the last layout.
+- **Grid Columns for Areas** shows the real number, filled in from the Block Grid data type.
+- A line underneath says where it comes from: "Following the data type (12)", or "Set for this block. The data type uses 12", with a button to go back.
+- Empty, or the data type's own number, means "follow the data type". Nothing is stored, exactly as in core.
+
+### One Areas list
+
+1. **The first layout** is core's areas.
+   - Its header says **Breakpoint alias: None. Used on every screen unless a layout below applies.**
+   - Areas are added here, with **Add area**.
+   - Each box has core's pencil and bin. The pencil opens core's own area dialog.
+   - The bin warns that the area is removed from every layout.
+2. **Each extra layout** has a **Breakpoint alias**, **Grid columns** and a bin.
+3. **Add layout** sits at the bottom.
+
+Every layout looks the same: boxes showing the alias, drag to reorder, and core's corner handle to resize.
+The number boxes for columns, rows and order were removed.
+A keyboard route for size and order is still to come.
+
+### Breakpoint alias
+
+The layout's identifier is labelled **Breakpoint alias**.
+It is the name the site's CSS uses for that breakpoint: `md`, `768`, or a column count such as `9`.
+The stored property is still `identifier`, so nothing changed underneath.
+
+Every CSS framework calls this a breakpoint: Bootstrap's `md` in `g-col-md-6`, Tailwind's `md:`, Foundation's `medium`.
+The first layout is the equivalent of a class with no breakpoint, such as Bootstrap's `col-6`.
 
 ### Core's data does not change
 
-- The default layout still writes core's `areaGridColumns` and `areas`, with core's own spans.
+- The first layout writes core's `areaGridColumns` and `areas`, with core's own spans and order.
 - Extra layouts stay in our own properties ([Decision 001](/decisions/001-store-layouts-inline/)).
-- Uninstall the package and every block still works as core expects. Only the extra layouts are lost.
+- Remove the package and every block still works as core expects. Only the extra layouts are lost.
+
+## How it is built
+
+- **The first layout is a property editor** inside `<umb-property alias="areas">`. Core's area dialog finds the areas through that property, so it has to sit there, as core's own editor does.
+- **The extra layouts live in the same editor**, so the whole list is one property row.
+- **Core's area dialog** is opened with our own copy of its modal token. Core does not export it, but it is the standard workspace dialog for the `block-grid-area-type` entity.
+- **The corner handle is a copy of core's** `umb-block-scale-handler`. Core only defines its handle when core's Areas editor loads, and the tab no longer shows that editor.
 
 ## Consequences
 
-- **One pattern to learn.** The default layout and the extra layouts look and work alike.
-- **We render core's Areas editor ourselves**, rather than embedding it unchanged. More code, but the look is ours to keep consistent.
-- **No breaking changes.** Existing blocks open as they are: a default layout with no extra layouts.
+- **One pattern to learn.** The first layout and the extra layouts look and work alike.
+- **No breaking changes.** Existing blocks open as they are: a first layout with no extra layouts.
+- **Order is visual only.** The HTML follows the first layout's order, so that is the reading order. The tab's help text says so.
+- **More code of our own.** We render the areas ourselves instead of embedding core's editor.
 
-## Open question
-
-The default layout's **Identifier**. Core has nowhere to store it.
-
-- Show it read-only, as its column count, for example "12".
-- Or store it in our own property, which core ignores.
-
-To be decided from the mockup.
+The earlier [clickable mockup](/mockups/one-list-of-layouts-mockup.html) shows the idea before it was built.

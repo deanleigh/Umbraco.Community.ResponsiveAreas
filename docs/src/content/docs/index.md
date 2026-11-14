@@ -7,9 +7,11 @@ Responsive areas for the Umbraco Block Grid.
 
 Block Grid areas have one fixed layout.
 ResponsiveAreas replaces the block type's Areas tab with a version that supports several area layouts per block.
-Each layout sets its own column count, area spans and order.
+Each layout has a breakpoint alias, its own grid columns, and its own area spans and order.
 
 No CSS framework required.
+
+**[Watch the three-minute tutorial](/introduction/#watch-it-working)** to see it working.
 
 ## Status
 

@@ -58,61 +58,69 @@ But it has costs:
 - **Editors cannot see it.** The Areas tab shows one layout. The tablet and phone layouts exist only as class names.
 - **It is easy to break.** One typo in an alias changes the layout silently.
 
-## What we are building
+## How ResponsiveAreas works
 
 ResponsiveAreas replaces the block type's **Areas** tab.
+It keeps everything core does, and adds **layouts**.
 
-The new tab keeps everything editors know from core, and adds **layouts**.
+![The ResponsiveAreas Areas tab for the demo block. A Grid box shows Grid Columns for Areas as 12, following the data type. Below it, the Areas list starts with the first layout, which has no breakpoint alias and holds areas a, b, c and d with edit and delete icons and an Add area button. Three more layouts follow, with breakpoint aliases lg, md and sm and grid columns 9, 6 and 3. Each shows the same four areas, resized and reordered, and drawn narrower than the one above.](../../assets/screenshots/introduction/04-responsive-areas-tab.png)
 
-![A mockup of the ResponsiveAreas tab for "Layout - 3 | 6 | 3". A base layout of 12 columns sits at the top. Below it are layouts for 9, 6 and 3 columns. Each is drawn narrower than the last, and the same three areas are resized and reordered in each.](../../assets/screenshots/introduction/04-responsive-areas-mockup.png)
-
-:::note
-This is a mockup, not the finished tab.
-The real tab is built from core's own Areas tab, so it looks and behaves like Umbraco.
-You can [try the interactive mockup](/mockups/responsive-areas-tab-mockup.html).
-:::
-
-- **The base layout** is the one you know. Areas are added and deleted here.
-- **Each extra layout** has an identifier and a column count.
-- **In each layout, the same areas** can be resized and reordered.
-- **Each layout is drawn to scale**, so a 6-column layout is half the width of a 12-column one.
+- **Grid Columns for Areas** shows the real number, filled in from the data type.
+- **The first layout** is core's own areas. It has no breakpoint, so it is used on every screen unless a layout below applies. Areas are added and edited here.
+- **Each extra layout** has a **breakpoint alias**, such as `md`, and its own **grid columns**.
+- **In every layout, the same areas** can be resized by the corner and reordered by dragging.
 
 Aliases go back to being names.
+See [Coming from classes in aliases](/explanation/coming-from-classes-in-aliases/) for how each part of an old alias moves.
 
-## See it working
+## Watch it working
 
-The test site has a demo page: one block, four areas, four layouts.
-The aliases are plain `a`, `b`, `c` and `d`. Every move comes from the layouts.
+A three-minute tutorial: the front end, the Areas tab, the CSS it writes, and two live edits.
 
-At 12 columns, area a is a tall feature spanning two rows.
+<video controls preload="metadata" width="100%" src="/video/responsive-areas-tutorial.mp4">
+  <a href="/video/responsive-areas-tutorial.mp4">Download the ResponsiveAreas tutorial video (MP4, 23 MB)</a>
+</video>
 
-![The demo block at 12 columns. Blue area a spans two rows on the left. Green area b sits top right. Yellow area c and red area d sit side by side below b. A badge reads "Layout: 12 (base)".](../../assets/screenshots/introduction/05-demo-12.png)
+<details>
+<summary>Transcript</summary>
 
-At 9 columns, area a runs across the top.
+1. Responsive Areas. Different area layouts for every screen size, in the Umbraco Block Grid.
+2. Here is a block with four areas: A, B, C and D.
+3. As the screen narrows, the areas change size and order. It's all set up in the backoffice. Let's see how.
+4. Open the block in your Block Grid data type, and go to the Areas tab.
+5. Grid Columns for Areas sets the grid. Here, twelve, filled in from the data type.
+6. The first layout has no breakpoint. Add your areas here. It's used on every screen, unless a layout below applies.
+7. Then add a layout for each breakpoint. Each one has a breakpoint alias, here large, medium and small, and its own grid columns. Every layout uses the same areas.
+8. Drag a box to change its order. Drag its corner to change its size.
+9. On the page, each area gets CSS variables. The breakpoint alias is on the end of each name. The values are the spans and order from the backoffice.
+10. Your own CSS decides when each breakpoint applies. This site uses Bootstrap, so the medium layout uses Bootstrap's medium width.
+11. The same variables work just as well with Tailwind, Foundation, or your own CSS. Only the breakpoint rule changes.
+12. Let's change something. In the medium layout, area B is three columns wide. Drag its corner to six. Submit, and save.
+13. One value changes. B's column span at medium goes from three to six.
+14. Refresh at tablet width. B now spans the full width.
+15. Now the small layout. Drag D to the front, and save.
+16. The order values update. D is now first.
+17. On a phone, D now comes first. Order changes what you see. The reading order stays the same as the first layout.
+18. Responsive Areas. Set up in the backoffice, styled with your own CSS. Your areas are stored the standard Umbraco way, so your blocks keep working if you remove it.
 
-![The demo block at 9 columns. Area a runs full width across the top. Areas b, c and d sit in a row of three below it. A badge reads "Layout: 9".](../../assets/screenshots/introduction/05-demo-9.png)
-
-At 6 columns, area d leads the page.
-
-![The demo block at 6 columns. Red area d is first and full width. Area a follows, full width. Areas b and c sit side by side at the bottom. A badge reads "Layout: 6".](../../assets/screenshots/introduction/05-demo-6.png)
-
-At 3 columns, everything stacks in a new order: c, a, d, b.
-
-![The demo block at 3 columns. The areas are stacked one above the other, in the order c, a, d, b. A badge reads "Layout: 3".](../../assets/screenshots/introduction/05-demo-3.png)
+</details>
 
 ## How the front end uses it
 
 ResponsiveAreas does not decide when a layout applies.
 **Your site's CSS does.**
 
-The package writes each area's span and order as CSS variables, one set per layout.
+ResponsiveAreas writes each area's span and order as CSS variables, one set per layout.
+The breakpoint alias is on the end of each name, such as `--umb-block-grid--area-column-span--md`.
 Your stylesheet decides which set to use at which screen size.
 
 That means:
 
-- **No CSS framework required.** Bootstrap, your own grid, or nothing at all.
-- **No breakpoints in the backoffice.** Editors and developers each work where they should.
-- **Any grid model works.** Keep 12 columns and change spans, or change the column count itself (12, 9, 6, 3).
+- **No CSS framework required.** Bootstrap, Tailwind, Foundation, your own grid, or nothing at all.
+- **No breakpoint widths in the backoffice.** Editors and developers each work where they should.
+- **Any grid model works.** Keep 12 columns and change spans, or change the column count itself.
+
+The [front-end output reference](/reference/front-end-output/) has the details.
 
 ## What we are aiming for
 
