@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One list of layouts – mockup</title>
+<!--
+  Mockup for Decision 006: one list of layouts, the default first.
+  - The default layout's Columns is core's Grid Columns for Areas.
+  - Areas are added, renamed and deleted in the default layout only.
+  - Extra layouts resize and reorder the same areas.
+  - Add area inside the default layout, Add layout below the last layout.
+-->
+<style>
+:root{
+  --bg:#f3f3f5;--panel:#fff;--box:#f6f6f7;--text:#1b264f;--muted:#68676b;
+  --border:#e9e9eb;--border-strong:#c4c4c4;--handle:#8a8a8a;--accent:#3544b1;--ok:#2bc37c;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#1d1d20;--panel:#26262a;--box:#323237;--text:#ececf0;--muted:#a0a0a8;
+    --border:#3a3a40;--border-strong:#55555c;--handle:#8a8a92;--accent:#8f9bff;--ok:#2a9d66;color-scheme:dark}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 "Lato",system-ui,sans-serif;padding:24px 16px}
+.note{max-width:1100px;margin:0 auto 12px;font-size:13px;color:var(--muted)}
+.note button{height:26px;font-size:12px}
+.mk{max-width:1100px;margin:0 auto;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.hd{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border-bottom:1px solid var(--border)}
+.title{padding:18px 20px;font-weight:700;font-size:16px}
+.tabs{display:flex;font-size:13px;color:var(--muted)}
+.tabs span{padding:16px 18px;border-left:1px solid var(--border)}
+.tabs .on{color:var(--text);box-shadow:inset 0 -3px 0 #f5c1bc}
+.box{background:var(--panel);border:1px solid var(--border);border-radius:6px;margin:20px}
+.bh{padding:12px 18px;border-bottom:1px solid var(--border)}
+.body{padding:18px}
+input{font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--border-strong);border-radius:3px;height:32px;padding:0 10px}
+button{font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--border-strong);border-radius:3px;height:32px;padding:0 12px;cursor:pointer}
+.dash{width:100%;border-style:dashed;margin-top:8px}
+.lay{padding:16px;border:1px solid var(--border);border-radius:6px;margin-bottom:12px}
+.lh{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.lh label{display:flex;align-items:center;gap:8px;font-weight:700}
+.lh .ro{display:inline-flex;align-items:center;height:32px;padding:0 10px;min-width:110px;border:1px solid var(--border);border-radius:3px;color:var(--muted);font-weight:400}
+.lh .tag{font-size:12px;color:var(--muted)}
+.lh .rm{margin-left:auto;height:28px;padding:0 8px}
+.ic svg,.rm svg{width:15px;height:15px;display:block}
+.gr{display:grid;gap:1px}
+.ar{position:relative;background:var(--box);border:1px solid var(--border-strong);border-radius:3px;padding:8px 10px;min-height:58px;cursor:move;user-select:none;min-width:0}
+.ar:hover{background:color-mix(in srgb,var(--box) 85%,var(--text) 6%)}
+.ar.drop{outline:2px solid var(--accent)}
+.ar.ph{opacity:.25}
+.top{display:flex;justify-content:space-between;gap:6px;min-width:0}
+.al{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ic{display:flex;gap:6px;color:var(--muted)}
+.ic button{height:auto;border:0;padding:2px;background:none;color:inherit}
+.nums{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;cursor:default}
+.nums label{display:flex;flex-direction:column;font-size:12px}
+.nums input{width:4.2em;height:28px;padding:0 6px}
+.h{position:absolute;right:-4px;bottom:-4px;width:9px;height:9px;background:var(--panel);border:1px solid var(--accent);cursor:ew-resize;opacity:0;transition:opacity .12s;touch-action:none}
+.ar:hover .h,.h.on{opacity:1}
+.sz{position:absolute;left:100%;top:100%;margin:6px 0 0 6px;background:#fff;color:#000;font-size:12px;padding:0 6px;border-radius:3px;white-space:nowrap;z-index:2;box-shadow:0 1px 3px rgba(0,0,0,.3);display:none}
+.h.on+.sz{display:block}
+.empty{color:var(--muted);font-size:13px;padding:8px 0}
+.ft{display:flex;justify-content:flex-end;gap:8px;padding:12px 20px;background:var(--panel);border-top:1px solid var(--border)}
+.ft .ok{background:var(--ok);color:#fff;border-color:transparent;font-weight:700}
+</style>
+</head>
+<body>
+<p class="note">Mockup for Decision 006. Click anything.
+  <button id="fresh">Start empty</button> <button id="demo">Load the demo block</button></p>
+<div class="mk">
+  <div class="hd">
+    <div class="title">Configuration of 'Layout - Responsive Demo'</div>
+    <div class="tabs"><span class="on">Areas</span><span>Settings</span><span>Advanced</span></div>
+  </div>
+  <div class="box">
+    <div class="bh">Areas</div>
+    <div class="body"><div id="ls"></div><button id="addLayout" class="dash">Add layout</button></div>
+  </div>
+  <div class="ft"><button>Close</button><button class="ok">Submit</button></div>
+</div>
+<script>
+const PENCIL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>';
+const BIN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>';
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+let n=0;const key=()=>'k'+(++n);
+
+// Default layout: core's data (columns + areas with spans). Extra layouts: our data, per area key.
+let S;
+function empty(){S={columns:12,areas:[],layouts:[]}}
+function demo(){
+  const a={key:key(),alias:'a',c:6},b={key:key(),alias:'b',c:6},c={key:key(),alias:'c',c:3},d={key:key(),alias:'d',c:3};
+  S={columns:12,areas:[a,b,c,d],layouts:[
+    {key:key(),id:'9',c:9,v:{[a.key]:{c:9,o:1},[b.key]:{c:3,o:2},[c.key]:{c:3,o:3},[d.key]:{c:3,o:4}}},
+    {key:key(),id:'6',c:6,v:{[a.key]:{c:6,o:2},[b.key]:{c:3,o:3},[c.key]:{c:3,o:4},[d.key]:{c:6,o:1}}},
+  ]};
+}
+// An area's values in an extra layout: stored, else inherited from the default (capped), keeping its place.
+function val(l,area,i){const s=l.v[area.key]||{};return{c:Math.min(s.c??area.c,l.c),o:s.o??i+1}}
+function ordered(l){return S.areas.map((a,i)=>({a,v:val(l,a,i)})).sort((x,y)=>x.v.o-y.v.o)}
+
+let drag=null;
+function draw(){
+  const widest=Math.max(S.columns,...S.layouts.map(l=>l.c));
+  const def=`<div class="lay" data-l="-1">
+    <div class="lh">
+      <label>Identifier <span class="ro" title="Read-only: the default layout's identifier is its column count">${S.columns}</span></label>
+      <label>Columns <input id="defCols" type="number" min="1" max="24" value="${S.columns}" style="width:70px"></label>
+      <span class="tag">Default layout</span>
+    </div>
+    <div style="width:${S.columns/widest*100}%">
+      ${S.areas.length?`<div class="gr" style="grid-template-columns:repeat(${S.columns},minmax(0,1fr))">${S.areas.map((a,i)=>`
+        <div class="ar" draggable="true" data-l="-1" data-k="${a.key}" style="grid-column:span ${Math.min(a.c,S.columns)}">
+          <div class="top"><span class="al">${esc(a.alias)}</span><span class="ic">
+            <button data-edit="${a.key}" aria-label="Edit ${esc(a.alias)}">${PENCIL}</button>
+            <button data-del="${a.key}" aria-label="Delete ${esc(a.alias)}">${BIN}</button></span></div>
+          <span class="h" data-l="-1" data-k="${a.key}"></span><span class="sz"></span>
+        </div>`).join('')}</div>`:'<div class="empty">No areas yet.</div>'}
+      <button id="addArea" class="dash">Add area</button>
+    </div>
+  </div>`;
+  const extra=S.layouts.map((l,li)=>`<div class="lay">
+    <div class="lh">
+      <label>Identifier <input data-li="${li}" data-f="id" value="${esc(l.id)}" style="width:110px"></label>
+      <label>Columns <input data-li="${li}" data-f="c" type="number" min="1" max="24" value="${l.c}" style="width:70px"></label>
+      <button class="rm" data-rm="${li}" aria-label="Remove layout ${esc(l.id)}">${BIN}</button>
+    </div>
+    <div style="width:${l.c/widest*100}%">
+      ${S.areas.length?`<div class="gr" style="grid-template-columns:repeat(${l.c},minmax(0,1fr))">${ordered(l).map(({a,v})=>`
+        <div class="ar" draggable="true" data-l="${li}" data-k="${a.key}" style="grid-column:span ${v.c}">
+          <div class="top"><span class="al">${esc(a.alias)}</span></div>
+          <div class="nums">
+            <label>Columns<input data-li="${li}" data-k="${a.key}" data-n="c" type="number" min="1" value="${v.c}"></label>
+            <label>Order<input data-li="${li}" data-k="${a.key}" data-n="o" type="number" min="1" value="${v.o}"></label>
+          </div>
+          <span class="h" data-l="${li}" data-k="${a.key}"></span><span class="sz"></span>
+        </div>`).join('')}</div>`:'<div class="empty">Add areas in the default layout.</div>'}
+    </div>
+  </div>`).join('');
+  document.getElementById('ls').innerHTML=def+extra;
+  wire();
+}
+
+function setVals(li,changes){const l=S.layouts[li];S.areas.forEach((a,i)=>{if(changes[a.key])l.v[a.key]={...val(l,a,i),...changes[a.key]}})}
+
+function wire(){
+  const ls=document.getElementById('ls');
+  ls.querySelector('#defCols').onchange=e=>{S.columns=Math.max(1,Math.min(24,Math.round(+e.target.value)||12));draw()};
+  ls.querySelector('#addArea').onclick=()=>{
+    let alias='area',i=1;while(S.areas.some(a=>a.alias===alias))alias='area'+(++i);
+    alias=prompt('Alias for the new area',alias);if(!alias)return;
+    S.areas.push({key:key(),alias,c:Math.max(1,Math.round(S.columns/2))});draw();
+  };
+  ls.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>{const a=S.areas.find(x=>x.key===b.dataset.edit);const v=prompt('Alias',a.alias);if(v){a.alias=v;draw()}});
+  ls.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{S.areas=S.areas.filter(x=>x.key!==b.dataset.del);draw()});
+  ls.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{S.layouts.splice(+b.dataset.rm,1);draw()});
+  ls.querySelectorAll('.lh input[data-li]').forEach(x=>x.onchange=()=>{
+    const l=S.layouts[+x.dataset.li];
+    if(x.dataset.f==='id'){l.id=x.value.replace(/[^A-Za-z0-9_-]/g,'');const lead=parseInt(l.id,10);if(lead>=1)l.c=Math.min(24,lead)}
+    else l.c=Math.max(1,Math.min(24,Math.round(+x.value)||1));
+    draw();
+  });
+  ls.querySelectorAll('.nums input').forEach(x=>{
+    x.onmousedown=e=>e.stopPropagation();
+    x.onchange=()=>{
+      const li=+x.dataset.li,l=S.layouts[li],f=x.dataset.n;
+      const max=f==='c'?l.c:S.areas.length;
+      setVals(li,{[x.dataset.k]:{[f]:Math.max(1,Math.min(max,Math.round(+x.value)||1))}});draw();
+    };
+  });
+  // Drag the whole box to reorder, within its own layout.
+  ls.querySelectorAll('.ar').forEach(el=>{
+    el.ondragstart=e=>{if(e.target.closest('input,button,.h')){e.preventDefault();return}drag={l:+el.dataset.l,k:el.dataset.k};setTimeout(()=>el.classList.add('ph'))};
+    el.ondragend=()=>{el.classList.remove('ph');drag=null};
+    el.ondragover=e=>{if(drag&&drag.l===+el.dataset.l){e.preventDefault();el.classList.add('drop')}};
+    el.ondragleave=()=>el.classList.remove('drop');
+    el.ondrop=e=>{
+      e.preventDefault();el.classList.remove('drop');if(!drag||drag.k===el.dataset.k)return;
+      if(drag.l===-1){
+        const from=S.areas.findIndex(a=>a.key===drag.k),to=S.areas.findIndex(a=>a.key===el.dataset.k);
+        S.areas.splice(to,0,S.areas.splice(from,1)[0]);
+      }else{
+        const keys=ordered(S.layouts[drag.l]).map(x=>x.a.key);
+        const from=keys.indexOf(drag.k),to=keys.indexOf(el.dataset.k);keys.splice(to,0,keys.splice(from,1)[0]);
+        setVals(drag.l,Object.fromEntries(keys.map((k,i)=>[k,{o:i+1}])));
+      }
+      drag=null;draw();
+    };
+  });
+  // Drag the corner handle to resize, snapping to whole columns, with a live "6 x 1" label.
+  ls.querySelectorAll('.h').forEach(h=>h.onpointerdown=e=>{
+    e.preventDefault();e.stopPropagation();
+    const li=+h.dataset.l,k=h.dataset.k,cols=li===-1?S.columns:S.layouts[li].c;
+    const area=S.areas.find(a=>a.key===k),start=li===-1?Math.min(area.c,cols):val(S.layouts[li],area,S.areas.indexOf(area)).c;
+    const cw=h.closest('.gr').getBoundingClientRect().width/cols,sx=e.clientX,box=h.parentElement,lab=h.nextElementSibling;
+    let span=start;h.classList.add('on');lab.textContent=span+' x 1';
+    const mv=ev=>{span=Math.max(1,Math.min(cols,Math.round(start+(ev.clientX-sx)/cw)));box.style.gridColumn='span '+span;lab.textContent=span+' x 1'};
+    const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);
+      if(li===-1)area.c=span;else setVals(li,{[k]:{c:span}});draw()};
+    addEventListener('pointermove',mv);addEventListener('pointerup',up);
+  });
+}
+
+document.getElementById('addLayout').onclick=()=>{
+  const prev=S.layouts.length?S.layouts[S.layouts.length-1].c:S.columns,c=Math.max(1,prev-3);
+  S.layouts.push({key:key(),id:String(c),c,v:{}});draw();
+};
+document.getElementById('fresh').onclick=()=>{empty();draw()};
+document.getElementById('demo').onclick=()=>{demo();draw()};
+empty();draw();
+</script>
+</body>
+</html>
