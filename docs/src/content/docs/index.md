@@ -11,7 +11,15 @@ Each layout has a breakpoint alias, its own grid columns, and its own area spans
 
 No CSS framework required.
 
-**[Watch the three-minute tutorial](/introduction/#watch-it-working)** to see it working.
+## Watch it working
+
+A three-minute tutorial: the front end, the Areas tab, the CSS it writes, and two live edits.
+
+<video controls preload="metadata" width="100%" src="/video/responsive-areas-tutorial.mp4">
+  <a href="/video/responsive-areas-tutorial.mp4">Download the ResponsiveAreas tutorial video (MP4, 23 MB)</a>
+</video>
+
+A [transcript](/introduction/#watch-it-working) is on the Introduction page.
 
 ## Status
 
