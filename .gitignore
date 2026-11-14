@@ -25,6 +25,9 @@ Thumbs.db
 # Secrets: Playwright credentials (.env.example is committed)
 **/.env
 
+# Secrets: Umbraco MCP server API user credentials
+.mcp.json
+
 # Playwright MCP browser output
 .playwright-mcp/
 

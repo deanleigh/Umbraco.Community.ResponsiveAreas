@@ -1,5 +1,8 @@
 {
   "permissions": {
+    "allow": [
+      "Read(src/Umbraco.Community.ResponsiveAreas/Client/.env)"
+    ],
     "deny": [
       "Bash(dotnet run*)",
       "Bash(dotnet watch*)",

@@ -1,8 +1,9 @@
 /*
-  ResponsiveAreas: example site CSS for the 12 / 9 / 6 / 3 demo.
+  ResponsiveAreas: example site CSS for the demo (12, then lg 9, md 6, sm 3 columns).
 
   The package only writes numbers as CSS variables. This file decides which layout
-  applies at which width. Identifiers "9", "6" and "3" are this site's choice.
+  applies at which width. The breakpoint aliases "lg", "md" and "sm" are this site's choice,
+  named after Bootstrap's breakpoints.
 
   Bootstrap's CSS grid (.grid) reads --bs-columns, so each layout's column count
   goes straight into it. Selectors use two classes so they win over the g-col-*
@@ -12,46 +13,46 @@
   keeps its base spans.
 */
 
-/* Base layout, 1200px and wider: 12 columns. */
+/* First layout, no breakpoint alias: 1200px and wider. */
 .responsive-areas > .responsive-area {
   grid-column: auto / span var(--umb-block-grid--area-column-span);
   grid-row: auto / span var(--umb-block-grid--area-row-span, 1);
   order: 0;
 }
 
-/* "9": 992px to 1199px. */
+/* "lg": 992px to 1199px (Bootstrap's lg). */
 @media (992px <= width < 1200px) {
   .responsive-areas {
-    --bs-columns: var(--umb-block-grid--area-grid-columns--9, 12);
+    --bs-columns: var(--umb-block-grid--area-grid-columns--lg, 12);
   }
   .responsive-areas > .responsive-area {
-    grid-column: auto / span var(--umb-block-grid--area-column-span--9, var(--umb-block-grid--area-column-span));
-    grid-row: auto / span var(--umb-block-grid--area-row-span--9, var(--umb-block-grid--area-row-span, 1));
-    order: var(--umb-block-grid--area-order--9, 0);
+    grid-column: auto / span var(--umb-block-grid--area-column-span--lg, var(--umb-block-grid--area-column-span));
+    grid-row: auto / span var(--umb-block-grid--area-row-span--lg, var(--umb-block-grid--area-row-span, 1));
+    order: var(--umb-block-grid--area-order--lg, 0);
   }
 }
 
-/* "6": 576px to 991px. */
-@media (576px <= width < 992px) {
+/* "md": 768px to 991px (Bootstrap's md). */
+@media (768px <= width < 992px) {
   .responsive-areas {
-    --bs-columns: var(--umb-block-grid--area-grid-columns--6, 12);
+    --bs-columns: var(--umb-block-grid--area-grid-columns--md, 12);
   }
   .responsive-areas > .responsive-area {
-    grid-column: auto / span var(--umb-block-grid--area-column-span--6, var(--umb-block-grid--area-column-span));
-    grid-row: auto / span var(--umb-block-grid--area-row-span--6, var(--umb-block-grid--area-row-span, 1));
-    order: var(--umb-block-grid--area-order--6, 0);
+    grid-column: auto / span var(--umb-block-grid--area-column-span--md, var(--umb-block-grid--area-column-span));
+    grid-row: auto / span var(--umb-block-grid--area-row-span--md, var(--umb-block-grid--area-row-span, 1));
+    order: var(--umb-block-grid--area-order--md, 0);
   }
 }
 
-/* "3": below 576px. */
-@media (width < 576px) {
+/* "sm": below 768px. */
+@media (width < 768px) {
   .responsive-areas {
-    --bs-columns: var(--umb-block-grid--area-grid-columns--3, 12);
+    --bs-columns: var(--umb-block-grid--area-grid-columns--sm, 12);
   }
   .responsive-areas > .responsive-area {
-    grid-column: auto / span var(--umb-block-grid--area-column-span--3, var(--umb-block-grid--area-column-span));
-    grid-row: auto / span var(--umb-block-grid--area-row-span--3, var(--umb-block-grid--area-row-span, 1));
-    order: var(--umb-block-grid--area-order--3, 0);
+    grid-column: auto / span var(--umb-block-grid--area-column-span--sm, var(--umb-block-grid--area-column-span));
+    grid-row: auto / span var(--umb-block-grid--area-row-span--sm, var(--umb-block-grid--area-row-span, 1));
+    order: var(--umb-block-grid--area-order--sm, 0);
   }
 }
 
@@ -70,7 +71,7 @@
 .areas[data-layoutalias="layoutResponsiveDemo"] > [data-areaalias="d"] { background: var(--bs-danger-bg-subtle) !important; }
 
 .areas[data-layoutalias="layoutResponsiveDemo"]::before {
-  content: "Layout: 12 (base)";
+  content: "Layout: first (12)";
   grid-column: 1 / -1;
   order: -1;
   justify-self: start;
@@ -81,11 +82,11 @@
   font-weight: 700;
 }
 @media (992px <= width < 1200px) {
-  .areas[data-layoutalias="layoutResponsiveDemo"]::before { content: "Layout: 9"; }
+  .areas[data-layoutalias="layoutResponsiveDemo"]::before { content: "Layout: lg"; }
 }
-@media (576px <= width < 992px) {
-  .areas[data-layoutalias="layoutResponsiveDemo"]::before { content: "Layout: 6"; }
+@media (768px <= width < 992px) {
+  .areas[data-layoutalias="layoutResponsiveDemo"]::before { content: "Layout: md"; }
 }
-@media (width < 576px) {
-  .areas[data-layoutalias="layoutResponsiveDemo"]::before { content: "Layout: 3"; }
+@media (width < 768px) {
+  .areas[data-layoutalias="layoutResponsiveDemo"]::before { content: "Layout: sm"; }
 }
