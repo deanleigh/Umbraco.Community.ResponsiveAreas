@@ -1,0 +1,10 @@
+/* A video wider than the text column: up to 72rem, centred on the column, never wider than the viewport. */
+.video-wide {
+	display: block;
+	width: min(72rem, 100vw - 2 * var(--sl-nav-pad-x));
+	max-width: none;
+	height: auto;
+	margin-inline-start: 50%;
+	transform: translateX(-50%);
+	border-radius: 0.5rem;
+}
