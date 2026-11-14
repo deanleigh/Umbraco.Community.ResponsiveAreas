@@ -16,6 +16,7 @@ Once a release workflow exists, the tag **is** the published NuGet version. Push
    Docs live in the docs worktree at `.worktrees/docs/` (see `WORKTREES.md`).
 2. Take version numbers from the `.csproj` files, never from docs or this file.
 3. Note anything missing or wrong in the docs as you read.
+4. Check the **umbraco-mcp** server is connected (configured in the gitignored `.mcp.json`, API user "Umbraco MCP"). If it isn't, tell Dean before any backoffice work. Never fall back to editing uSync files.
 
 ## What This Is
 
