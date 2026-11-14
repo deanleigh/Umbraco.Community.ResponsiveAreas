@@ -14,7 +14,7 @@ In development. Not yet released.
 
 ## Documentation
 
-Coming soon.
+[responsive-areas-docs.pages.dev](https://responsive-areas-docs.pages.dev/), including a [three-minute tutorial video](https://responsive-areas-docs.pages.dev/#watch-it-working).
 
 ## Licence
 
