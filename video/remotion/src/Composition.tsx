@@ -11,8 +11,8 @@ import {
 } from "remotion";
 import timings from "./timings.json";
 
-// Adapted from the Tailored Travel video POC. The title and end cards are part of
-// the recording, so this only adds narration, captions, cursor, ripples and zooms.
+// Adapted from the Tailored Travel video POC. The cover, code and end cards are part of
+// the recording, so this only adds narration, captions, cursor, ripples and zooms. No music.
 
 const { fontFamily } = loadFont("normal", { weights: ["400", "700"] });
 
@@ -58,7 +58,6 @@ const Demo: React.FC = () => {
     <AbsoluteFill style={{ backgroundColor: "black", fontFamily }}>
       <Screen />
       <Captions />
-      <Audio src={staticFile("music/electric-throne.mp3")} volume={musicVolume} />
       {timings.steps.map((step) => (
         <Sequence
           key={step.id}
@@ -71,33 +70,6 @@ const Demo: React.FC = () => {
     </AbsoluteFill>
   );
 };
-
-// Background music: quiet, a little lower still while the narrator speaks ("ducking"),
-// fading in at the start and out at the end.
-const MUSIC = { clear: 0.12, underVoice: 0.05, duckMs: 300, fadeInMs: 1500, fadeOutMs: 3000 };
-
-function musicVolume(frame: number) {
-  const ms = (frame / FPS) * 1000;
-  // How far into "ducked" we are: 0 = no narration nearby, 1 = narration playing.
-  let duck = 0;
-  for (const s of timings.steps) {
-    const start = s.startMs;
-    const end = s.startMs + s.audioMs;
-    const d = interpolate(ms, [start - MUSIC.duckMs, start, end, end + MUSIC.duckMs], [0, 1, 1, 0], {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    });
-    duck = Math.max(duck, d);
-  }
-  const level = MUSIC.clear + (MUSIC.underVoice - MUSIC.clear) * duck;
-  const fade = interpolate(
-    ms,
-    [0, MUSIC.fadeInMs, timings.totalMs - MUSIC.fadeOutMs, timings.totalMs],
-    [0, 1, 1, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-  );
-  return level * fade;
-}
 
 const useRecordingMs = () => {
   const frame = useCurrentFrame();
