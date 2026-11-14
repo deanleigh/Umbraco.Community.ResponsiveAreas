@@ -27,3 +27,11 @@ Thumbs.db
 
 # Playwright MCP browser output
 .playwright-mcp/
+
+# Demo video: generated files (the final MP4 in video/out is committed)
+video/audio/
+video/recording/
+video/remotion/public/
+video/remotion/src/timings.json
+video/music/
+video/out/render.log

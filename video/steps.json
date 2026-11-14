@@ -1,0 +1,25 @@
+{
+  "baseUrl": "https://localhost:44316",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "voice": "en-GB-RyanNeural",
+  "title": "ResponsiveAreas",
+  "steps": [
+    { "id": "01-intro", "narration": "Are your clients complaining their site doesn't look right on their Google Nest Hub? Or their child's Tamagotchi?" },
+    { "id": "02-title", "narration": "Then you need Responsive Areas." },
+    { "id": "03-old-tab", "narration": "In the old days, the Block Grid gave each block one layout. To make it responsive, you did it yourself, in CSS." },
+    { "id": "04-old-alias", "narration": "Usually by stuffing framework classes into the area alias. Which is not what an alias is for." },
+    { "id": "05-front-tablet", "narration": "Here's a block on a tablet. The badge says we're using the six column layout. Area D is first, then A, then B and C. Oh dear. That's not the order the client wanted." },
+    { "id": "06-backoffice", "narration": "So let's open the block's Areas tab in the backoffice. Under Layouts, here's the six column layout, drawn to scale." },
+    { "id": "07-drag-a", "narration": "To change the order, I drag area A by its handle and drop it on area D. Watch the Order numbers. A is now one, and D is two." },
+    { "id": "08-resize-b", "narration": "The client also wants B bigger. I grab its bottom right corner and drag it across. It snaps to the grid, and its Columns number goes from three to six." },
+    { "id": "09-save", "narration": "Submit, and save the data type." },
+    { "id": "10-front-fixed", "narration": "Back to the tablet, and refresh. A is first, D is second, and B now spans the full width. No CSS touched." },
+    { "id": "11-phone-edit", "narration": "Now the phone. In the three column layout, I drag area D by its handle and drop it on area C, so D comes first. Save again." },
+    { "id": "12-front-phone", "narration": "On the phone, D now leads the page. Different orders and different sizes, on every screen." },
+    { "id": "13-widths", "narration": "One block, four layouts. Big screen. Laptop. Tablet. Phone. Or quite possibly, a Tamagotchi." },
+    { "id": "14-end", "narration": "No CSS framework required. Aliases go back to being names. Responsive Areas." }
+  ]
+}
