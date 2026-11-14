@@ -50,13 +50,18 @@ git merge main
 
 ## Deployment
 
-Cloudflare Pages project `responsive-areas-docs` (not yet created).
+Cloudflare Pages project `responsive-areas-docs` on Dean's own Cloudflare account, live at https://responsive-areas-docs.pages.dev. Every push to `docs/site` redeploys.
 
 | Setting | Value |
 |---------|-------|
 | Production branch | `docs/site` |
-| Root directory | `docs` |
-| Build command | `npm run build` |
-| Build output directory | `dist` |
+| Root directory | (empty) |
+| Build command | `cd docs && npm ci && npm run build` |
+| Build output directory | `docs/dist` |
+| Environment variable | `NODE_VERSION` = `22.12.0` |
+
+`docs/dist/` is gitignored. Cloudflare builds the site; the build output is never committed.
+
+The GitHub app "Cloudflare Workers and Pages" is installed on the personal `deanleigh` account with access to this repository only.
 
 The production branch **must** be `docs/site`. If it is left as `main`, Pages silently serves a frozen copy (learned on Tailored Travel). Check the live site after each deploy.

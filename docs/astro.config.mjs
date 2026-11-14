@@ -4,7 +4,7 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
-	// Placeholder until the Cloudflare Pages project exists.
+	// Cloudflare Pages project responsive-areas-docs, built from docs/site.
 	site: 'https://responsive-areas-docs.pages.dev',
 	integrations: [
 		starlight({
