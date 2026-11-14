@@ -47,6 +47,14 @@ A narrated tutorial, just under three minutes, with no music: [watch it on the I
 - Code screens for Bootstrap, Tailwind, Foundation and plain CSS.
 - The demo data type is copied through the Management API before recording and restored exactly afterwards.
 
+## The docs are live
+
+The docs site is published at [responsive-areas-docs.pages.dev](https://responsive-areas-docs.pages.dev/), on Cloudflare Pages.
+
+- Cloudflare builds it from the `docs/site` branch on every push. The build output is not committed.
+- The landing page is now a splash page, with the tutorial video at full width under the title.
+- The repository README links to the docs and the video.
+
 ## Still to do
 
 - **A keyboard route** for size and order. Core's own Areas editor has none either.
