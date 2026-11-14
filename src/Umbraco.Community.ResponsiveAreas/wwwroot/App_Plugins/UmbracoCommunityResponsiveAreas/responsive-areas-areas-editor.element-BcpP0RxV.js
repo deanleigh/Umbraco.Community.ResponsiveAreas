@@ -1,5 +1,5 @@
 import { UmbLitElement as L } from "@umbraco-cms/backoffice/lit-element";
-import { css as M, customElement as P, html as d, property as _, state as b, repeat as V } from "@umbraco-cms/backoffice/external/lit";
+import { css as M, customElement as P, html as d, property as _, state as b, repeat as I } from "@umbraco-cms/backoffice/external/lit";
 import { UMB_PROPERTY_DATASET_CONTEXT as ie } from "@umbraco-cms/backoffice/property";
 import { UmbChangeEvent as ne } from "@umbraco-cms/backoffice/event";
 import { UmbId as le } from "@umbraco-cms/backoffice/id";
@@ -98,13 +98,13 @@ E.styles = [
 E = fe([
   P("responsive-areas-scale-handler")
 ], E);
-var ye = Object.defineProperty, _e = Object.getOwnPropertyDescriptor, X = (e) => {
+var ye = Object.defineProperty, _e = Object.getOwnPropertyDescriptor, V = (e) => {
   throw TypeError(e);
 }, v = (e, s, t, o) => {
   for (var a = o > 1 ? void 0 : o ? _e(s, t) : s, n = e.length - 1, l; n >= 0; n--)
     (l = e[n]) && (a = (o ? l(s, t, a) : l(a)) || a);
   return o && a && ye(s, t, a), a;
-}, Y = (e, s, t) => s.has(e) || X("Cannot " + t), be = (e, s, t) => (Y(e, s, "read from private field"), t ? t.call(e) : s.get(e)), I = (e, s, t) => s.has(e) ? X("Cannot add the same private member more than once") : s instanceof WeakSet ? s.add(e) : s.set(e, t), k = (e, s, t) => (Y(e, s, "access private method"), t), A, m, C, B, N;
+}, X = (e, s, t) => s.has(e) || V("Cannot " + t), be = (e, s, t) => (X(e, s, "read from private field"), t ? t.call(e) : s.get(e)), G = (e, s, t) => s.has(e) ? V("Cannot add the same private member more than once") : s instanceof WeakSet ? s.add(e) : s.set(e, t), k = (e, s, t) => (X(e, s, "access private method"), t), A, m, C, Y, N;
 const ge = 24;
 class we extends Event {
   constructor(s) {
@@ -118,7 +118,7 @@ class ke extends Event {
 }
 let h = class extends L {
   constructor() {
-    super(...arguments), I(this, m), this._items = [], I(this, A, new de(this, {
+    super(...arguments), G(this, m), this._items = [], G(this, A, new de(this, {
       itemSelector: ".area",
       resolvePlacement: me,
       // The buttons and corner handle must not start a move.
@@ -137,7 +137,7 @@ let h = class extends L {
     return this._items;
   }
   render() {
-    return V(
+    return I(
       this._items,
       (e) => e.area.key,
       (e) => {
@@ -149,7 +149,7 @@ let h = class extends L {
           </div>
           <responsive-areas-scale-handler
             @mousedown=${(a) => a.preventDefault()}
-            @pointerdown=${(a) => k(this, m, B).call(this, a, e)}>
+            @pointerdown=${(a) => k(this, m, Y).call(this, a, e)}>
             ${t}x${o}
           </responsive-areas-scale-handler>
         </div>`;
@@ -162,7 +162,7 @@ m = /* @__PURE__ */ new WeakSet();
 C = function(e) {
   this.dispatchEvent(new we(e));
 };
-B = function(e, s) {
+Y = function(e, s) {
   e.preventDefault();
   const t = e.currentTarget, o = t.closest(".area"), a = s.values, n = this.clientWidth / this.layout.columns, l = o.offsetHeight / a.rowSpan, oe = e.clientX, re = e.clientY, x = s.area.key;
   this._scaling = { key: x, columnSpan: a.columnSpan, rowSpan: a.rowSpan }, t.setAttribute("scale-mode", ""), e.composedPath()[0].setPointerCapture(e.pointerId);
@@ -264,7 +264,7 @@ var Se = Object.defineProperty, $e = Object.getOwnPropertyDescriptor, q = (e) =>
   for (var a = o > 1 ? void 0 : o ? $e(s, t) : s, n = e.length - 1, l; n >= 0; n--)
     (l = e[n]) && (a = (o ? l(s, t, a) : l(a)) || a);
   return o && a && Se(s, t, a), a;
-}, O = (e, s, t) => s.has(e) || q("Cannot " + t), u = (e, s, t) => (O(e, s, "read from private field"), t ? t.call(e) : s.get(e)), G = (e, s, t) => s.has(e) ? q("Cannot add the same private member more than once") : s instanceof WeakSet ? s.add(e) : s.set(e, t), xe = (e, s, t, o) => (O(e, s, "write to private field"), s.set(e, t), t), i = (e, s, t) => (O(e, s, "access private method"), t), S, r, c, F, g, H, K, $, Z, J, R, Q, j, z, ee, D, te, se;
+}, O = (e, s, t) => s.has(e) || q("Cannot " + t), u = (e, s, t) => (O(e, s, "read from private field"), t ? t.call(e) : s.get(e)), B = (e, s, t) => s.has(e) ? q("Cannot add the same private member more than once") : s instanceof WeakSet ? s.add(e) : s.set(e, t), xe = (e, s, t, o) => (O(e, s, "write to private field"), s.set(e, t), t), i = (e, s, t) => (O(e, s, "access private method"), t), S, r, c, F, g, H, K, $, Z, J, R, Q, j, z, ee, D, te, se;
 const ae = "responsiveLayouts", T = 24, Ee = new ue(
   "Umb.Modal.Workspace",
   {
@@ -274,7 +274,7 @@ const ae = "responsiveLayouts", T = 24, Ee = new ue(
 );
 let p = class extends L {
   constructor() {
-    super(), G(this, r), this.value = [], this._columns = 12, this._layouts = [], G(this, S), new pe(this, Ee).addAdditionalPath("block-grid-area-type").onSetup(() => {
+    super(), B(this, r), this.value = [], this._columns = 12, this._layouts = [], B(this, S), new pe(this, Ee).addAdditionalPath("block-grid-area-type").onSetup(() => {
       const e = this._columns / 2;
       return {
         data: {
@@ -298,7 +298,7 @@ let p = class extends L {
   }
   render() {
     return d`${i(this, r, te).call(this)}
-      ${V(
+      ${I(
       this._layouts,
       (e) => e.key,
       (e) => i(this, r, se).call(this, e)
@@ -397,7 +397,12 @@ te = function() {
     }
   }));
   return d`<div class="layout">
-      <p class="layout-header summary">${this._columns} columns, set in Grid.</p>
+      <div class="layout-header">
+        <strong>Breakpoint alias</strong>
+        <span class="summary">None. Used on every screen unless a layout below applies.</span>
+        <strong>Grid columns</strong>
+        <span class="summary">${this._columns}, set in Grid.</span>
+      </div>
       <responsive-areas-layout-grid
         style="width:${i(this, r, D).call(this, this._columns)}%; --responsive-areas-columns:${this._columns};"
         .layout=${e}
@@ -412,19 +417,20 @@ se = function(e) {
   const s = u(this, r, c).map((t, o) => ({ area: t, values: i(this, r, z).call(this, t, o, e) })).sort((t, o) => t.values.order - o.values.order);
   return d`<div class="layout">
       <div class="layout-header">
-        <uui-label for="identifier-${e.key}">Identifier</uui-label>
+        <!-- Stored as "identifier". Only the label says Breakpoint alias. -->
+        <uui-label for="identifier-${e.key}">Breakpoint alias</uui-label>
         <uui-input
           id="identifier-${e.key}"
-          label="Identifier"
+          label="Breakpoint alias"
           .value=${e.identifier}
           @change=${(t) => i(this, r, Q).call(this, e, t)}></uui-input>
-        <uui-label for="columns-${e.key}">Columns</uui-label>
+        <uui-label for="columns-${e.key}">Grid columns</uui-label>
         <uui-input
           id="columns-${e.key}"
           type="number"
           min="1"
           max=${T}
-          label="Columns"
+          label="Grid columns"
           .value=${String(e.columns)}
           @change=${(t) => i(this, r, j).call(this, e, t)}></uui-input>
         <uui-button compact label="Remove layout ${e.identifier}" @click=${() => i(this, r, J).call(this, e.key)}>
@@ -492,4 +498,4 @@ export {
   p as ResponsiveAreasAreasEditorElement,
   Te as default
 };
-//# sourceMappingURL=responsive-areas-areas-editor.element-Drnj0J7-.js.map
+//# sourceMappingURL=responsive-areas-areas-editor.element-BcpP0RxV.js.map

@@ -87,7 +87,7 @@ export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implement
     const overridden = this._blockColumns !== undefined;
     return html`<uui-box headline="Grid">
       <umb-property-layout
-        label="Columns"
+        label=${this.localize.term("blockEditor_areasLayoutColumns")}
         description="How many columns this block's areas sit in. Filled in from the Block Grid data type. Change it to give this block a different grid.">
         <div slot="editor" class="grid-columns">
           <uui-input
@@ -95,7 +95,7 @@ export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implement
             type="number"
             min="1"
             max=${MAX_COLUMNS}
-            label="Grid columns"
+            label=${this.localize.term("blockEditor_areasLayoutColumns")}
             .value=${String(this._baseColumns)}
             @change=${this.#onGridColumnsChange}></uui-input>
           <span class="grid-status" aria-live="polite">
@@ -119,7 +119,7 @@ export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implement
           <uui-box headline="Areas">
             <umb-property
               label=${this.localize.term("blockEditor_areasConfigurations")}
-              description="Add areas in the first layout. Each layout below rearranges the same areas, for example for a smaller screen. Order in a layout changes what you see, not the reading order, so arrange the first layout in reading order."
+              description="Add areas in the first layout. Each layout below rearranges the same areas at a breakpoint. The breakpoint alias is the name your site's CSS uses for it, for example md, or a column count such as 9. Order in a layout changes what you see, not the reading order, so arrange the first layout in reading order."
               alias="areas"
               property-editor-ui-alias="ResponsiveAreas.PropertyEditorUi.Areas"
               .config=${[{ alias: "areaGridColumns", value: this._baseColumns }]}></umb-property>

@@ -14,7 +14,7 @@ const r = [
     name: "ResponsiveAreas Block Grid Type Areas View",
     // Replaces core's Areas tab instead of adding a second one.
     overwrites: "Umb.WorkspaceView.BlockType.Grid.Areas",
-    element: () => import("./responsive-areas-workspace-view.element-BAB1GMgK.js"),
+    element: () => import("./responsive-areas-workspace-view.element-DYO7zoPZ.js"),
     weight: 1e3,
     meta: {
       label: "#blockEditor_tabAreas",
@@ -34,7 +34,7 @@ const r = [
     type: "propertyEditorUi",
     alias: "ResponsiveAreas.PropertyEditorUi.Areas",
     name: "ResponsiveAreas Areas Property Editor UI",
-    element: () => import("./responsive-areas-areas-editor.element-Drnj0J7-.js"),
+    element: () => import("./responsive-areas-areas-editor.element-BcpP0RxV.js"),
     meta: {
       label: "ResponsiveAreas Areas",
       icon: "icon-grid",

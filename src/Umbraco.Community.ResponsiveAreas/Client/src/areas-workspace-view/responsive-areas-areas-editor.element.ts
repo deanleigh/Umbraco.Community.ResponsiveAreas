@@ -227,7 +227,12 @@ export class ResponsiveAreasAreasEditorElement extends UmbLitElement implements 
       },
     }));
     return html`<div class="layout">
-      <p class="layout-header summary">${this._columns} columns, set in Grid.</p>
+      <div class="layout-header">
+        <strong>Breakpoint alias</strong>
+        <span class="summary">None. Used on every screen unless a layout below applies.</span>
+        <strong>Grid columns</strong>
+        <span class="summary">${this._columns}, set in Grid.</span>
+      </div>
       <responsive-areas-layout-grid
         style="width:${this.#widthOf(this._columns)}%; --responsive-areas-columns:${this._columns};"
         .layout=${layout}
@@ -248,19 +253,20 @@ export class ResponsiveAreasAreasEditorElement extends UmbLitElement implements 
       .sort((a, b) => a.values.order - b.values.order);
     return html`<div class="layout">
       <div class="layout-header">
-        <uui-label for="identifier-${layout.key}">Identifier</uui-label>
+        <!-- Stored as "identifier". Only the label says Breakpoint alias. -->
+        <uui-label for="identifier-${layout.key}">Breakpoint alias</uui-label>
         <uui-input
           id="identifier-${layout.key}"
-          label="Identifier"
+          label="Breakpoint alias"
           .value=${layout.identifier}
           @change=${(e: Event) => this.#onIdentifierChange(layout, e)}></uui-input>
-        <uui-label for="columns-${layout.key}">Columns</uui-label>
+        <uui-label for="columns-${layout.key}">Grid columns</uui-label>
         <uui-input
           id="columns-${layout.key}"
           type="number"
           min="1"
           max=${MAX_COLUMNS}
-          label="Columns"
+          label="Grid columns"
           .value=${String(layout.columns)}
           @change=${(e: Event) => this.#onColumnsChange(layout, e)}></uui-input>
         <uui-button compact label="Remove layout ${layout.identifier}" @click=${() => this.#removeLayout(layout.key)}>
