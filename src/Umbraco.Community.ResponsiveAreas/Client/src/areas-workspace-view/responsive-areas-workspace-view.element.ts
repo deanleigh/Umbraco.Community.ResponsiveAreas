@@ -6,6 +6,8 @@ import { UMB_DATA_TYPE_WORKSPACE_CONTEXT } from "@umbraco-cms/backoffice/data-ty
 import { UMB_PROPERTY_DATASET_CONTEXT, type UmbPropertyDatasetContext } from "@umbraco-cms/backoffice/property";
 import { UmbId } from "@umbraco-cms/backoffice/id";
 import type { ResponsiveArea, ResponsiveAreaLayoutValues, ResponsiveLayout } from "./types.js";
+import type { ResponsiveLayoutGridItem, ResponsiveLayoutValuesChangeEvent } from "./responsive-areas-layout-grid.element.js";
+import "./responsive-areas-layout-grid.element.js";
 
 const LAYOUTS_ALIAS = "responsiveLayouts";
 const MAX_COLUMNS = 24;
@@ -146,19 +148,6 @@ export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implement
     };
   }
 
-  #onAreaValueChange(
-    layout: ResponsiveLayout,
-    area: ResponsiveArea,
-    _index: number,
-    field: keyof ResponsiveAreaLayoutValues,
-    event: Event,
-  ) {
-    const raw = parseInt((event.target as HTMLInputElement).value, 10);
-    const max = field === "columnSpan" ? layout.columns : field === "order" ? this._areas.length : MAX_COLUMNS;
-    const value = Math.max(1, Math.min(max, raw || 1));
-    this.#writeValues(layout, new Map([[area.key, { [field]: value }]]));
-  }
-
   // Writes changes for one or more areas in a layout, in a single update.
   // Typing, resizing and reordering all end up here, so they store the same numbers (Decision 002).
   #writeValues(layout: ResponsiveLayout, changes: Map<string, Partial<ResponsiveAreaLayoutValues>>) {
@@ -172,152 +161,19 @@ export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implement
     );
   }
 
-  // ---------- Dragging ----------
-
-  // Resize: drag the corner handle. The box follows the pointer, snapping to whole columns and rows,
-  // and the new spans are written when the pointer is released.
-  #startResize(event: PointerEvent, layout: ResponsiveLayout, area: ResponsiveArea, index: number) {
-    event.preventDefault();
-    const handle = event.currentTarget as HTMLElement;
-    const box = handle.closest(".area") as HTMLElement;
-    const grid = box.parentElement as HTMLElement;
-    const start = this.#valuesFor(area, index, layout);
-    const columnWidth = grid.clientWidth / layout.columns;
-    const rowHeight = box.offsetHeight / start.rowSpan;
-    const startX = event.clientX;
-    const startY = event.clientY;
-    let columnSpan = start.columnSpan;
-    let rowSpan = start.rowSpan;
-
-    handle.setPointerCapture(event.pointerId);
-    const move = (e: PointerEvent) => {
-      columnSpan = Math.max(1, Math.min(layout.columns, Math.round(start.columnSpan + (e.clientX - startX) / columnWidth)));
-      rowSpan = Math.max(1, Math.min(MAX_COLUMNS, Math.round(start.rowSpan + (e.clientY - startY) / rowHeight)));
-      box.style.gridColumn = `span ${columnSpan}`;
-      box.style.gridRow = `span ${rowSpan}`;
-    };
-    const end = () => {
-      handle.removeEventListener("pointermove", move);
-      handle.removeEventListener("pointerup", end);
-      handle.removeEventListener("pointercancel", end);
-      if (columnSpan !== start.columnSpan || rowSpan !== start.rowSpan) {
-        this.#writeValues(layout, new Map([[area.key, { columnSpan, rowSpan }]]));
-      }
-    };
-    handle.addEventListener("pointermove", move);
-    handle.addEventListener("pointerup", end);
-    handle.addEventListener("pointercancel", end);
-  }
-
-  // Reorder: drag an area's grip onto another area in the same layout.
-  #dragging?: { layoutKey: string; areaKey: string };
-
-  #onDragStart(event: DragEvent, layout: ResponsiveLayout, area: ResponsiveArea) {
-    this.#dragging = { layoutKey: layout.key, areaKey: area.key };
-    event.dataTransfer?.setData("text/plain", area.key);
-    if (event.dataTransfer) event.dataTransfer.effectAllowed = "move";
-  }
-
-  #onDragOver(event: DragEvent, layout: ResponsiveLayout) {
-    // Only accept drops from the same layout.
-    if (this.#dragging?.layoutKey !== layout.key) return;
-    event.preventDefault();
-    (event.currentTarget as HTMLElement).classList.add("drop-target");
-  }
-
-  #onDragLeave(event: DragEvent) {
-    (event.currentTarget as HTMLElement).classList.remove("drop-target");
-  }
-
-  #onDrop(event: DragEvent, layout: ResponsiveLayout, target: ResponsiveArea) {
-    event.preventDefault();
-    (event.currentTarget as HTMLElement).classList.remove("drop-target");
-    const dragging = this.#dragging;
-    this.#dragging = undefined;
-    if (dragging?.layoutKey !== layout.key || dragging.areaKey === target.key) return;
-
-    // Current visual order in this layout, then move the dragged area to the target's place.
-    const ordered = this._areas
-      .map((area, index) => ({ area, order: this.#valuesFor(area, index, layout).order }))
-      .sort((a, b) => a.order - b.order)
-      .map((x) => x.area.key);
-    const from = ordered.indexOf(dragging.areaKey);
-    const to = ordered.indexOf(target.key);
-    ordered.splice(to, 0, ordered.splice(from, 1)[0]);
-
-    // Renumber every area 1, 2, 3… so Order always matches what you see.
-    this.#writeValues(layout, new Map(ordered.map((key, i) => [key, { order: i + 1 }])));
-  }
-
-  #onDragEnd() {
-    this.#dragging = undefined;
-  }
-
-  #renderNumber(
-    layout: ResponsiveLayout,
-    area: ResponsiveArea,
-    index: number,
-    field: keyof ResponsiveAreaLayoutValues,
-    label: string,
-    value: number,
-  ) {
-    const id = `${field}-${layout.key}-${area.key}`;
-    return html`<span class="number">
-      <uui-label for=${id}>${label}</uui-label>
-      <uui-input
-        id=${id}
-        type="number"
-        min="1"
-        label="${label} for ${area.alias ?? "area"} in layout ${layout.identifier}"
-        .value=${String(value)}
-        @change=${(e: Event) => this.#onAreaValueChange(layout, area, index, field, e)}></uui-input>
-    </span>`;
-  }
-
   #renderLayoutAreas(layout: ResponsiveLayout) {
     // Each layout is drawn at a width proportional to its column count.
     const widest = Math.max(this._baseColumns, ...this._layouts.map((x) => x.columns));
     const width = (layout.columns / widest) * 100;
-    return html`<div class="layout-grid" style="width:${width}%; grid-template-columns: repeat(${layout.columns}, minmax(0, 1fr));">
-      ${repeat(
-        this._areas,
-        (area) => area.key,
-        (area, index) => {
-          const v = this.#valuesFor(area, index, layout);
-          // The grip and corner handle are mouse and touch shortcuts. The number boxes are the
-          // keyboard and screen reader route, so the handles are hidden from assistive tech.
-          return html`<div
-            class="area"
-            style="grid-column: span ${v.columnSpan}; grid-row: span ${v.rowSpan}; order: ${v.order};"
-            @dragover=${(e: DragEvent) => this.#onDragOver(e, layout)}
-            @dragleave=${this.#onDragLeave}
-            @drop=${(e: DragEvent) => this.#onDrop(e, layout, area)}>
-            <div class="area-header">
-              <span
-                class="grip"
-                draggable="true"
-                title="Drag to reorder"
-                aria-hidden="true"
-                @dragstart=${(e: DragEvent) => this.#onDragStart(e, layout, area)}
-                @dragend=${this.#onDragEnd}>
-                <uui-icon name="icon-navigation"></uui-icon>
-              </span>
-              <strong class="alias">${area.alias}</strong>
-            </div>
-            <div class="numbers">
-              ${this.#renderNumber(layout, area, index, "columnSpan", "Columns", v.columnSpan)}
-              ${this.#renderNumber(layout, area, index, "rowSpan", "Rows", v.rowSpan)}
-              ${this.#renderNumber(layout, area, index, "order", "Order", v.order)}
-            </div>
-            <span
-              class="resize"
-              title="Drag to resize"
-              aria-hidden="true"
-              @pointerdown=${(e: PointerEvent) => this.#startResize(e, layout, area, index)}></span>
-          </div>`;
-        },
-      )}
-    </div>`;
+    // Areas in this layout's order. The grid draws them in that order, so dragging works on what you see.
+    const items: Array<ResponsiveLayoutGridItem> = this._areas
+      .map((area, index) => ({ area, values: this.#valuesFor(area, index, layout) }))
+      .sort((a, b) => a.values.order - b.values.order);
+    return html`<responsive-areas-layout-grid
+      style="width:${width}%; --responsive-areas-columns:${layout.columns};"
+      .layout=${layout}
+      .items=${items}
+      @values-change=${(e: ResponsiveLayoutValuesChangeEvent) => this.#writeValues(layout, e.changes)}></responsive-areas-layout-grid>`;
   }
 
   #renderLayout(layout: ResponsiveLayout) {
@@ -397,74 +253,6 @@ export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implement
       }
       .layout-header uui-input[type="number"] {
         width: 6em;
-      }
-      /* Areas mirror core's grey boxes. */
-      .layout-grid {
-        display: grid;
-        gap: 1px;
-      }
-      .area {
-        position: relative;
-        background: var(--uui-color-surface-alt);
-        border: 1px solid var(--uui-color-border-emphasis);
-        border-radius: var(--uui-border-radius);
-        padding: var(--uui-size-space-3);
-        min-width: 0;
-      }
-      .area.drop-target {
-        outline: 2px solid var(--uui-color-interactive-emphasis);
-      }
-      .area-header {
-        display: flex;
-        align-items: center;
-        gap: var(--uui-size-space-2);
-        margin-bottom: var(--uui-size-space-2);
-        min-width: 0;
-      }
-      .grip {
-        cursor: grab;
-        display: inline-flex;
-        color: var(--uui-color-text-alt);
-      }
-      /* Corner handle, drawn like core's: two lines in the bottom-right corner. */
-      .resize {
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        width: 16px;
-        height: 16px;
-        cursor: nwse-resize;
-        touch-action: none;
-      }
-      .resize::after {
-        content: "";
-        position: absolute;
-        right: 3px;
-        bottom: 3px;
-        width: 8px;
-        height: 8px;
-        border-right: 2px solid var(--uui-color-border-emphasis);
-        border-bottom: 2px solid var(--uui-color-border-emphasis);
-      }
-      .alias {
-        display: block;
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .numbers {
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--uui-size-space-2);
-      }
-      .number {
-        display: flex;
-        flex-direction: column;
-        font-size: var(--uui-type-small-size);
-      }
-      .number uui-input {
-        width: 4.5em;
       }
       uui-button[look="placeholder"] {
         width: 100%;
