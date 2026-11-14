@@ -14,7 +14,7 @@ const o = [
     name: "ResponsiveAreas Block Grid Type Areas View",
     // Replaces core's Areas tab instead of adding a second one.
     overwrites: "Umb.WorkspaceView.BlockType.Grid.Areas",
-    element: () => import("./responsive-areas-workspace-view.element-MuuKnslX.js"),
+    element: () => import("./responsive-areas-workspace-view.element-BDSS4c77.js"),
     weight: 1e3,
     meta: {
       label: "#blockEditor_tabAreas",

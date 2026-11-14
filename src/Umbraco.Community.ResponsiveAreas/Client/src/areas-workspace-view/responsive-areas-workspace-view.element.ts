@@ -18,10 +18,6 @@ const MAX_COLUMNS = 24;
 export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implements UmbWorkspaceViewElement {
   #dataset?: UmbPropertyDatasetContext;
 
-  // The data type's Grid Columns drive the placeholder and the default area columns.
-  @state()
-  private _areaColumnsConfig?: UmbPropertyEditorConfig;
-
   @state()
   private _areasConfig?: UmbPropertyEditorConfig;
 
@@ -35,8 +31,13 @@ export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implement
   @state()
   private _baseColumns = 12;
 
-  #dataTypeColumns = 12;
-  #blockColumns?: number;
+  // The data type's Grid Columns, shown so editors can see what the block follows.
+  @state()
+  private _dataTypeColumns = 12;
+
+  // The block's own Grid Columns for Areas (core's areaGridColumns). Undefined means it follows the data type.
+  @state()
+  private _blockColumns?: number;
 
   constructor() {
     super();
@@ -45,12 +46,8 @@ export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implement
       this.observe(
         await context?.propertyValueByAlias<undefined | string>("gridColumns"),
         (value) => {
-          this.#dataTypeColumns = value ? parseInt(value, 10) : 12;
-          this._areaColumnsConfig = [
-            { alias: "placeholder", value: this.#dataTypeColumns },
-            { alias: "min", value: 1 },
-          ];
-          this._areasConfig = [{ alias: "defaultAreaGridColumns", value: this.#dataTypeColumns }];
+          this._dataTypeColumns = value ? parseInt(value, 10) : 12;
+          this._areasConfig = [{ alias: "defaultAreaGridColumns", value: this._dataTypeColumns }];
           this.#updateBaseColumns();
         },
         "observeGridColumns",
@@ -74,7 +71,7 @@ export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implement
         await dataset?.propertyValueByAlias<number | string | null>("areaGridColumns"),
         (value) => {
           const n = typeof value === "string" ? parseInt(value, 10) : value;
-          this.#blockColumns = n && n > 0 ? n : undefined;
+          this._blockColumns = n && n > 0 ? n : undefined;
           this.#updateBaseColumns();
         },
         "observeAreaGridColumns",
@@ -83,7 +80,58 @@ export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implement
   }
 
   #updateBaseColumns() {
-    this._baseColumns = this.#blockColumns ?? this.#dataTypeColumns;
+    this._baseColumns = this._blockColumns ?? this._dataTypeColumns;
+  }
+
+  // ---------- Grid ----------
+
+  // Empty, or the data type's own number, means "follow the data type": nothing is stored,
+  // exactly as core does when its box is left empty.
+  #onGridColumnsChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const value = parseInt(input.value, 10);
+    if (!value || value === this._dataTypeColumns) {
+      this.#followDataType();
+      input.value = String(this._dataTypeColumns);
+      return;
+    }
+    const columns = Math.max(1, Math.min(MAX_COLUMNS, value));
+    input.value = String(columns);
+    this.#dataset?.setPropertyValue("areaGridColumns", columns);
+  }
+
+  #followDataType() {
+    this.#dataset?.setPropertyValue("areaGridColumns", undefined);
+  }
+
+  #renderGrid() {
+    const overridden = this._blockColumns !== undefined;
+    return html`<uui-box headline="Grid">
+      <umb-property-layout
+        label="Columns"
+        description="How many columns this block's areas sit in. Filled in from the Block Grid data type. Change it to give this block a different grid.">
+        <div slot="editor" class="grid-columns">
+          <uui-input
+            id="grid-columns"
+            type="number"
+            min="1"
+            max=${MAX_COLUMNS}
+            label="Grid columns"
+            .value=${String(this._baseColumns)}
+            @change=${this.#onGridColumnsChange}></uui-input>
+          <span class="grid-status" aria-live="polite">
+            ${overridden
+              ? html`Set for this block. The data type uses ${this._dataTypeColumns}.
+                  <uui-button
+                    look="secondary"
+                    compact
+                    label="Use the data type's ${this._dataTypeColumns}"
+                    @click=${this.#followDataType}></uui-button>`
+              : html`Following the data type (${this._dataTypeColumns}).`}
+          </span>
+        </div>
+      </umb-property-layout>
+    </uui-box>`;
   }
 
   // ---------- Layouts ----------
@@ -207,12 +255,8 @@ export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implement
 
   override render() {
     return this._areasConfig
-      ? html`<uui-box headline="Areas">
-          <umb-property
-            label=${this.localize.term("blockEditor_areasLayoutColumns")}
-            alias="areaGridColumns"
-            property-editor-ui-alias="Umb.PropertyEditorUi.Integer"
-            .config=${this._areaColumnsConfig}></umb-property>
+      ? html`${this.#renderGrid()}
+        <uui-box headline="Areas">
           <umb-property
             label=${this.localize.term("blockEditor_areasConfigurations")}
             alias="areas"
@@ -239,6 +283,18 @@ export class ResponsiveAreasWorkspaceViewElement extends UmbLitElement implement
       :host {
         display: block;
         margin: var(--uui-size-layout-1);
+      }
+      uui-box + uui-box {
+        margin-top: var(--uui-size-layout-1);
+      }
+      .grid-columns {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--uui-size-space-3);
+      }
+      .grid-columns uui-input {
+        width: 6em;
       }
       .layout {
         padding-bottom: var(--uui-size-space-5);
